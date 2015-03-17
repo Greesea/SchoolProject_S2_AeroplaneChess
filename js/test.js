@@ -15,3 +15,7 @@ function Draw(gameArea) {
     gameArea.fillRect(0 + (times * 2), 0, 100, 100);
     console.log(times);
 }
+
+$(function() {
+    Initialize();
+});
