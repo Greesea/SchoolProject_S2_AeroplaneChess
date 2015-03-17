@@ -1,6 +1,10 @@
 /**
  * Created by Drake on 2015/3/18.
  */
+$(function () {
+    Initialize();
+});
+
 function Initialize() {
     var mapObjArray = new Array();
     mapObjArray[0] = MapObject.CreateNew(Location.CreateNew(50, 50), Size.CreateNew(20, 20), Region.Red, false, Draw);
