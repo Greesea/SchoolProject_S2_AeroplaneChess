@@ -3,9 +3,9 @@
  */
 var times = 0;
 function Initialize() {
-    var gameArea = $("#gamearea").getContext("2d");
+    var gameArea = $("#gamearea")[0].getContext("2d");
     setInterval(function () {
-        Draw(gameArea)
+        Draw(gameArea);
     }, (1000 / 60));
 }
 
