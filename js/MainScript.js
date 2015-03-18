@@ -3,6 +3,7 @@
  */
 $(function () {
     Initialize();
+    $("#gamearea").attr("width",600).attr("height",480);
 });
 
 function Initialize() {
