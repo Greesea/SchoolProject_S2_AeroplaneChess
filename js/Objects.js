@@ -3,13 +3,13 @@
  */
 
 /**
- * È«¾Ö±äÁ¿£º»æÖÆÇøÓò
+ * å…¨å±€å˜é‡ï¼šç»˜åˆ¶åŒºåŸŸ
  * @type {null}
  */
 var gameArea = null;
 
 /**
- * Àà£ºÓÎÏ·
+ * ç±»ï¼šæ¸¸æˆ
  * @type {{MapObjs: null, Initialize: Initialize, GameStart: GameStart}}
  */
 var Game = {
@@ -38,7 +38,7 @@ var Game = {
 };
 
 /**
- * Àà£º×ÀÉÏµØÍ¼Ôª¼ş
+ * ç±»ï¼šæ¡Œä¸Šåœ°å›¾å…ƒä»¶
  * @type {{Location: null, Size: null, Region: null, canJump: null, Draw: null, CreateNew: CreateNew}}
  */
 var MapObject = {
@@ -62,7 +62,7 @@ var MapObject = {
 };
 
 /**
- * Àà£º´óĞ¡
+ * ç±»ï¼šå¤§å°
  * @type {{Width: number, Height: number, CreateNew: CreateNew}}
  */
 var Size = {
@@ -79,7 +79,7 @@ var Size = {
 };
 
 /**
- * Àà£º×ø±ê
+ * ç±»ï¼šåæ ‡
  * @type {{X: number, Y: number, CreateNew: CreateNew}}
  */
 var Location = {
@@ -96,7 +96,7 @@ var Location = {
 };
 
 /**
- * Ã¶¾Ù£ºËùÊô
+ * æšä¸¾ï¼šæ‰€å±
  * @type {{_Corner: string, Red: string, Blue: string, Orange: string, Yellow: string}}
  */
 var Region = {
