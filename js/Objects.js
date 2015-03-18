@@ -1,104 +1,46 @@
 /**
  * Created by Drake on 2015/3/18.
  */
+var MapObject = function (location, size, region, canJump, func) {
+    var obj = {};
+    obj.Location = location;
+    obj.Size = size;
+    obj.Region = region;
+    obj.CanJump = canJump;
+    obj.Draw = func;
+    return obj;
+};
 
-/**
- * 全局变量：绘制区域
- * @type {null}
- */
-var gameArea = null;
-
-/**
- * 类：游戏
- * @type {{MapObjs: null, Initialize: Initialize, GameStart: GameStart}}
- */
-var Game = {
-    "MapObjs": null,
-
-    Initialize: function (MapObjects) {
-        var game = Game;
-
-        game.MapObjs = MapObjects;
-
-        return game;
-    },
-
-    GameStart: function () {
+var Game = function (MapObjects) {
+    var obj = {};
+    obj.MapObjs = MapObjects;
+    obj.GameStart = function () {
         setInterval(function () {
-            for (var mo in this.MapObjs) {
-                if (mo.Draw != null)
-                    mo.Draw();
+            gameArea.clearRect(0, 0, 600, 480);
+            //console.log("clear");
+            for (var i = 0; i < obj.MapObjs.length; i++) {
+                if (obj.MapObjs[i].Draw != null)
+                    obj.MapObjs[i].Draw();
             }
         }, (1000 / 100));
-    },
-
-    GetObjs: function () {
-        return MapObject;
-    }
+    };
+    return obj;
 };
 
-/**
- * 类：桌上地图元件
- * @type {{Location: null, Size: null, Region: null, canJump: null, Draw: null, CreateNew: CreateNew}}
- */
-var MapObject = {
-    "Location": null,
-    "Size": null,
-    "Region": null,
-    "canJump": null,
-    Draw: null,
-
-    CreateNew: function (location, size, region, canJump, func) {
-        var mapo = MapObject;
-
-        mapo.Location = location;
-        mapo.Size = size;
-        mapo.Region = region;
-        mapo.canJump = canJump;
-        mapo.Draw = func;
-
-        return mapo;
-    }
+var Size = function (width, height) {
+    var obj = {};
+    obj.Width = width;
+    obj.Height = height;
+    return obj;
 };
 
-/**
- * 类：大小
- * @type {{Width: number, Height: number, CreateNew: CreateNew}}
- */
-var Size = {
-    "Width": -1,
-    "Height": -1,
-    CreateNew: function (width, height) {
-        var size = Size;
-
-        size.Width = width;
-        size.Height = height;
-
-        return size;
-    }
+var Location = function (x, y) {
+    var obj = {};
+    obj.X = x;
+    obj.Y = y;
+    return obj;
 };
 
-/**
- * 类：坐标
- * @type {{X: number, Y: number, CreateNew: CreateNew}}
- */
-var Location = {
-    "X": -1,
-    "Y": -1,
-    CreateNew: function (x, y) {
-        var location = Location;
-
-        location.X = x;
-        location.Y = y;
-
-        return location;
-    }
-};
-
-/**
- * 枚举：所属
- * @type {{_Corner: string, Red: string, Blue: string, Orange: string, Yellow: string}}
- */
 var Region = {
     _Corner: "gray",
     Red: "red",
