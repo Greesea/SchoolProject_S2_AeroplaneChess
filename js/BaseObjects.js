@@ -18,6 +18,8 @@ var gameArea;
  */
 var MapRect = function (location, size, region, canJump, func) {
     var obj = {};
+    obj.Type = "MapRect";
+
     obj.Location = location;
     obj.Size = size;
     obj.Region = region;
@@ -38,6 +40,8 @@ var MapRect = function (location, size, region, canJump, func) {
  */
 var MapTriangle = function (location, size, region, triangleDirection, func) {
     var obj = {};
+    obj.Type = "MapTriangle";
+
     obj.Location = location;
     obj.Size = size;
     obj.Region = region;
@@ -57,6 +61,8 @@ var MapTriangle = function (location, size, region, triangleDirection, func) {
  */
 var MapCircle = function (location, size, region, func) {
     var obj = {};
+    obj.Type = "MapCircle";
+
     obj.Location = location;
     obj.Size = size;
     obj.Region = region;
@@ -75,6 +81,8 @@ var MapCircle = function (location, size, region, func) {
  */
 var MapCircleAnother = function (centerLocation, radius, region, func) {
     var obj = {};
+    obj.Type = "MapCircleAnother";
+
     obj.CenterLocation = centerLocation;
     obj.Radius = radius;
     obj.Region = region;
@@ -91,6 +99,8 @@ var MapCircleAnother = function (centerLocation, radius, region, func) {
  */
 var Size = function (width, height) {
     var obj = {};
+    obj.Type = "Size";
+
     obj.Width = width;
     obj.Height = height;
     return obj;
@@ -105,6 +115,8 @@ var Size = function (width, height) {
  */
 var Location = function (x, y) {
     var obj = {};
+    obj.Type = "Location";
+
     obj.X = x;
     obj.Y = y;
     return obj;

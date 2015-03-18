@@ -28,7 +28,6 @@ function Initialize() {
     mapObjArray[12] = new MapCircle(new Location(200, 150), new Size(20, 20), Region.Orange, DrawFunc.FilledCircle);
     mapObjArray[13] = new MapCircle(new Location(250, 150), new Size(20, 20), Region.Yellow, DrawFunc.FilledCircle);
 
-
     gameArea = $("#gamearea")[0].getContext("2d");
     game = new Game(mapObjArray);
     game.GameStart();
