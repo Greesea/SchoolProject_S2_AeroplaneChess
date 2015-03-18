@@ -1,4 +1,8 @@
-#gameArea {
+body {
+    text-align: center;
+}
+#gamearea {
     width:600px;
     height:480px;
+    border:1px solid black;
 }
