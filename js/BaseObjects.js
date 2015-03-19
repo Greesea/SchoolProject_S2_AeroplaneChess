@@ -124,7 +124,7 @@ var Location = function (x, y) {
 
 /**
  * 绘制方法
- * @type {{FilledRect: FilledRect, FilledTriangle: FilledTriangle, FilledCircle: FilledCircle, FilledCircleAnother: FilledCircleAnother}}
+ * @type {{FilledRect: Function, FilledTriangle: Function, FilledCircle: Function, FilledCircleAnother: Function}}
  */
 var DrawFunc = {
     FilledRect: function () {
@@ -207,3 +207,4 @@ var TriangleDirection = {
     BottomLeft: 2,
     BottomRight: 3
 };
+
