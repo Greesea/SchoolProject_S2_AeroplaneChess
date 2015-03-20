@@ -2,6 +2,6 @@ body {
     text-align: center;
 }
 #gamearea {
-    width:60%;
+    /*width:60%;*/
     border:1px solid black;
 }

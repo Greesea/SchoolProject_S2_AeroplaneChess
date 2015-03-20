@@ -6,8 +6,58 @@ var unit = 20;
 
 $(function () {
     Initialize();
-    $(document).keydown(keyfunc);
+    //$(document).keydown(keyfunc);
     $("#gamearea").attr("width", 600).attr("height", 480);
+    $(document.body).on("click", function (e) {
+        var jx = e.pageX - ($("#gamearea").offset().left);
+        var jy = e.pageY - ($("#gamearea").offset().top);
+        var cx = e.originalEvent.clientX - ($("#gamearea").offset().left);
+        var cy = e.originalEvent.clientY - ($("#gamearea").offset().top);
+
+        var verifyX = cx;
+        var verifyY = cy;
+
+        var index = 0;
+        if ((verifyX >= game.MapObjs[index].Location.X && verifyX <= (game.MapObjs[index].Location.X + game.MapObjs[index].Size.Width)) && (verifyY >= game.MapObjs[index].Location.Y && verifyY <= (game.MapObjs[index].Location.Y + game.MapObjs[index].Size.Height))) {
+            if (game.MapObjs[index].Type == "MapTriangle") {
+                switch (game.MapObjs[index].Direction) {
+                    case TriangleDirection.TopLeft:
+                        game.MapObjs[index].Direction = TriangleDirection.TopRight;
+                        break;
+                    case TriangleDirection.TopRight:
+                        game.MapObjs[index].Direction = TriangleDirection.BottomRight;
+                        break;
+                    case TriangleDirection.BottomRight:
+                        game.MapObjs[index].Direction = TriangleDirection.BottomLeft;
+                        break;
+                    case TriangleDirection.BottomLeft:
+                        game.MapObjs[index].Direction = TriangleDirection.TopLeft;
+                        break;
+                }
+            } else if (game.MapObjs[index].Type == "MapRect" || game.MapObjs[index].Type == "MapCircle") {
+                switch (game.MapObjs[index].Region) {
+                    case Region._Corner:
+                        game.MapObjs[index].Region = Region.Red;
+                        break;
+                    case Region.Red:
+                        game.MapObjs[index].Region = Region.Blue;
+                        break;
+                    case Region.Blue:
+                        game.MapObjs[index].Region = Region.Orange;
+                        break;
+                    case Region.Orange:
+                        game.MapObjs[index].Region = Region.Yellow;
+                        break;
+                    case Region.Yellow:
+                        game.MapObjs[index].Region = Region._Corner;
+                        break;
+                }
+            }
+        }
+
+        console.log(e.originalEvent);
+        $("#output").html("X:" + jx + "<br/>Y:" + jy + "<br/>originalX:" + cx + "<br/>originalY:" + cy);
+    });
 });
 
 function Initialize() {
@@ -44,5 +94,5 @@ function keyfunc(event) {
         game.MapObjs[5].Location = new Location(game.MapObjs[5].Location.X, game.MapObjs[5].Location.Y + 2);
     }
 
-    $("#keyOutput").html(event.keyCode);
+    $("#output").html(event.keyCode);
 }
