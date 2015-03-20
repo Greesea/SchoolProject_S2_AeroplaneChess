@@ -9,11 +9,16 @@ $(function () {
     //$(document).keydown(keyfunc);
     $("#gamearea").attr("width", 600).attr("height", 480);
     $(document.body).on("click", function (e) {
-        var x = e.pageX - ($("#gamearea").offset().left);
-        var y = e.pageY - ($("#gamearea").offset().top);
+        var jx = e.pageX - ($("#gamearea").offset().left);
+        var jy = e.pageY - ($("#gamearea").offset().top);
+        var cx = e.originalEvent.clientX - ($("#gamearea").offset().left);
+        var cy = e.originalEvent.clientY - ($("#gamearea").offset().top);
+
+        var verifyX = cx;
+        var verifyY = cy;
 
         var index = 0;
-        if ((x >= game.MapObjs[index].Location.X && x <= (game.MapObjs[index].Location.X + game.MapObjs[index].Size.Width)) && (y >= game.MapObjs[index].Location.Y && y <= (game.MapObjs[index].Location.Y + game.MapObjs[index].Size.Height))) {
+        if ((verifyX >= game.MapObjs[index].Location.X && verifyX <= (game.MapObjs[index].Location.X + game.MapObjs[index].Size.Width)) && (verifyY >= game.MapObjs[index].Location.Y && verifyY <= (game.MapObjs[index].Location.Y + game.MapObjs[index].Size.Height))) {
             if (game.MapObjs[index].Type == "MapTriangle") {
                 switch (game.MapObjs[index].Direction) {
                     case TriangleDirection.TopLeft:
@@ -50,7 +55,8 @@ $(function () {
             }
         }
 
-        $("#output").html("X:" + x + "\nY:" + y);
+        console.log(e.originalEvent);
+        $("#output").html("X:" + jx + "<br/>Y:" + jy + "<br/>originalX:" + cx + "<br/>originalY:" + cy);
     });
 });
 
