@@ -12,11 +12,12 @@ var gameArea;
  * @param size      大小
  * @param region    所属玩家
  * @param canJump   能否跳跃
- * @param func      绘制方法
+ * @param drawfunc      绘制方法
  * @returns {{}}
  * @constructor
+ * @param updateFunc
  */
-var MapRect = function (location, size, region, canJump, func) {
+var MapRect = function (location, size, region, canJump, drawfunc, updateFunc) {
     var obj = {};
     obj.Type = "MapRect";
 
@@ -24,7 +25,8 @@ var MapRect = function (location, size, region, canJump, func) {
     obj.Size = size;
     obj.Region = region;
     obj.CanJump = canJump;
-    obj.Draw = func;
+    obj.Draw = drawfunc;
+    obj.Update = updateFunc
     return obj;
 };
 
@@ -34,11 +36,12 @@ var MapRect = function (location, size, region, canJump, func) {
  * @param size                  大小
  * @param region                所属玩家
  * @param triangleDirection     三角形方向
- * @param func                  绘制方法
+ * @param drawfunc                  绘制方法
  * @returns {{}}
  * @constructor
+ * @param updateFunc
  */
-var MapTriangle = function (location, size, region, triangleDirection, func) {
+var MapTriangle = function (location, size, region, triangleDirection, drawfunc, updateFunc) {
     var obj = {};
     obj.Type = "MapTriangle";
 
@@ -46,7 +49,8 @@ var MapTriangle = function (location, size, region, triangleDirection, func) {
     obj.Size = size;
     obj.Region = region;
     obj.Direction = triangleDirection;
-    obj.Draw = func;
+    obj.Draw = drawfunc;
+    obj.Update = updateFunc
     return obj;
 };
 
@@ -55,18 +59,20 @@ var MapTriangle = function (location, size, region, triangleDirection, func) {
  * @param location  位置(左上角)
  * @param size      大小
  * @param region    所属玩家
- * @param func      绘制方法
+ * @param drawfunc      绘制方法
  * @returns {{}}
  * @constructor
+ * @param updateFunc
  */
-var MapCircle = function (location, size, region, func) {
+var MapCircle = function (location, size, region, drawfunc, updateFunc) {
     var obj = {};
     obj.Type = "MapCircle";
 
     obj.Location = location;
     obj.Size = size;
     obj.Region = region;
-    obj.Draw = func;
+    obj.Draw = drawfunc;
+    obj.Update = updateFunc
     return obj;
 };
 
@@ -75,18 +81,20 @@ var MapCircle = function (location, size, region, func) {
  * @param centerLocation    中心点
  * @param radius            半径
  * @param region            所属玩家
- * @param func              绘制方法
+ * @param drawfunc              绘制方法
  * @returns {{}}
  * @constructor
+ * @param updateFunc
  */
-var MapCircleAnother = function (centerLocation, radius, region, func) {
+var MapCircleAnother = function (centerLocation, radius, region, drawfunc, updateFunc) {
     var obj = {};
     obj.Type = "MapCircleAnother";
 
     obj.CenterLocation = centerLocation;
     obj.Radius = radius;
     obj.Region = region;
-    obj.Draw = func;
+    obj.Draw = drawfunc;
+    obj.Update = updateFunc
     return obj;
 };
 
@@ -124,7 +132,7 @@ var Location = function (x, y) {
 
 /**
  * 绘制方法
- * @type {{FilledRect: Function, FilledTriangle: Function, FilledCircle: Function, FilledCircleAnother: Function}}
+ * @type {{FilledRect: FilledRect, FilledTriangle: FilledTriangle, FilledCircle: FilledCircle, FilledCircleAnother: FilledCircleAnother}}
  */
 var DrawFunc = {
     FilledRect: function () {
@@ -208,3 +216,33 @@ var TriangleDirection = {
     BottomRight: 3
 };
 
+/**
+ * 浏览器类别
+ * @type {{Android: string, WindowsPhone: string, WindowsPhoneDesktop: string, Other: string}}
+ */
+var Browsers = {
+    "Android": "Android",
+    "WindowsPhone": "WindowsPhone",
+    "WindowsPhoneDesktop": "WindowsPhoneDesktop",
+    "Other": "Other"
+};
+
+/**
+ * 鼠标按键
+ * @type {{LeftButton: number, RightButton: number}}
+ */
+var MouseButton = {
+    "LeftButton": 0,
+    "RightButton": 1,
+    "MiddleButton": 2
+};
+
+/**
+ * 鼠标按键状态
+ * @type {{None: number, Down: number, Click: number}}
+ */
+var MouseState = {
+    "None": 0,
+    "Down": 1,
+    "Click": 2
+};
