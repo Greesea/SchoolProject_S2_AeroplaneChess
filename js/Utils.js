@@ -49,6 +49,44 @@ var Utils = {
 
             result = gameArea.isPointInPath(location.X, location.Y);
             gameArea.restore();
+        } else if (mapObject.Type == "MapTriangle") {
+            gameArea.save();
+            gameArea.beginPath();
+
+            switch (mapObject.Direction) {
+                case TriangleDirection.TopLeft:
+                    gameArea.moveTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
+                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
+                    break;
+                case TriangleDirection.TopRight:
+                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
+                    break;
+                case TriangleDirection.BottomLeft:
+                    gameArea.moveTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
+                    break;
+                case TriangleDirection.BottomRight:
+                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
+                    gameArea.moveTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
+                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
+                    break;
+            }
+
+            gameArea.closePath();
+            result = gameArea.isPointInPath(location.X, location.Y);
+            gameArea.restore();
         } else {
             result = ((location.X >= mapObject.Location.X && location.X <= (mapObject.Location.X + mapObject.Size.Width)) && (location.Y >= mapObject.Location.Y && location.Y <= (mapObject.Location.Y + mapObject.Size.Height)));
         }
@@ -68,7 +106,7 @@ var MouseInputState = function (jqueryCanvas) {
     obj.Browser = Utils.CheckUA(navigator.userAgent);//识别浏览器
     obj.Offset = new Location(jqueryCanvas.offset().left, jqueryCanvas.offset().top);//给予offset初始值
     obj.Location = new Location(-1, -1);
-    obj._Mouse = [0, 0, 0];//初始化鼠标状态
+    var mouseStateArray = [0, 0, 0];//初始化鼠标状态
 
     /**
      * 获取鼠标状态
@@ -79,11 +117,11 @@ var MouseInputState = function (jqueryCanvas) {
     obj.GetState = function (mouseButton) {
         var value = -1;
         if (mouseButton == MouseButton.LeftButton) {
-            value = obj._Mouse[0];
+            value = mouseStateArray[0];
         } else if (mouseButton == MouseButton.RightButton) {
-            value = obj._Mouse[1];
+            value = mouseStateArray[1];
         } else if (mouseButton == MouseButton.MiddleButton) {
-            value = obj._Mouse[2];
+            value = mouseStateArray[2];
         }
 
         switch (value) {
@@ -103,8 +141,8 @@ var MouseInputState = function (jqueryCanvas) {
      */
     obj.ClearClickState = function () {
         for (var i = 0; i < 3; i++) {
-            if (obj._Mouse[i] == 2) {
-                obj._Mouse[i] = 0;
+            if (mouseStateArray[i] == 2) {
+                mouseStateArray[i] = 0;
             }
         }
     };
@@ -120,13 +158,13 @@ var MouseInputState = function (jqueryCanvas) {
     jqueryCanvas[0].addEventListener("mousedown", function (e) {
         switch (e.button) {
             case 0:
-                obj._Mouse[0] = 1;
+                mouseStateArray[0] = 1;
                 break;
             case 2:
-                obj._Mouse[1] = 1;
+                mouseStateArray[1] = 1;
                 break;
             case 1:
-                obj._Mouse[2] = 1;
+                mouseStateArray[2] = 1;
                 break;
         }
     }, false);
@@ -134,24 +172,24 @@ var MouseInputState = function (jqueryCanvas) {
     jqueryCanvas[0].addEventListener("mouseup", function (e) {
         switch (e.button) {
             case 0:
-                if (obj._Mouse[0] == 1) {
-                    obj._Mouse[0] = 2;
+                if (mouseStateArray[0] == 1) {
+                    mouseStateArray[0] = 2;
                 } else {
-                    obj._Mouse[0] = 0;
+                    mouseStateArray[0] = 0;
                 }
                 break;
             case 2:
-                if (obj._Mouse[1] == 1) {
-                    obj._Mouse[1] = 2;
+                if (mouseStateArray[1] == 1) {
+                    mouseStateArray[1] = 2;
                 } else {
-                    obj._Mouse[1] = 0;
+                    mouseStateArray[1] = 0;
                 }
                 break;
             case 1:
-                if (obj._Mouse[2] == 1) {
-                    obj._Mouse[2] = 2;
+                if (mouseStateArray[2] == 1) {
+                    mouseStateArray[2] = 2;
                 } else {
-                    obj._Mouse[2] = 0;
+                    mouseStateArray[2] = 0;
                 }
                 break;
         }
