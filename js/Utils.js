@@ -74,6 +74,7 @@ var Utils = {
                 if (array.length > 0) {
                     Utils.SortByZindex(array, false);
                     array[0].OnMouseClick();
+                    array[0].OnMouseHover();
                     setPressFunc(undefined);
                 }
             } else {
