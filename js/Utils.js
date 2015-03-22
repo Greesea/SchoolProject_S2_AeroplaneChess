@@ -91,6 +91,24 @@ var Utils = {
             result = ((location.X >= mapObject.Location.X && location.X <= (mapObject.Location.X + mapObject.Size.Width)) && (location.Y >= mapObject.Location.Y && location.Y <= (mapObject.Location.Y + mapObject.Size.Height)));
         }
         return result;
+    },
+
+    SortByZindex: function (array, isDrawing) {
+        array.sort(function (o1, o2) {
+            if (o1.Zindex > o2.Zindex) {
+                if (isDrawing) {
+                    return -1;
+                }
+                return 1;
+            }
+            else if (o1.Zindex < o2.Zindex) {
+                if (isDrawing) {
+                    return 1;
+                }
+                return -1;
+            }
+            return 0;
+        });
     }
 };
 

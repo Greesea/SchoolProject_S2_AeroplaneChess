@@ -26,7 +26,7 @@ var MapRect = function (location, size, region, canJump, drawfunc, updateFunc) {
     obj.Region = region;
     obj.CanJump = canJump;
     obj.Draw = drawfunc;
-    obj.Update = updateFunc
+    obj.Update = updateFunc;
     return obj;
 };
 
@@ -50,7 +50,7 @@ var MapTriangle = function (location, size, region, triangleDirection, drawfunc,
     obj.Region = region;
     obj.Direction = triangleDirection;
     obj.Draw = drawfunc;
-    obj.Update = updateFunc
+    obj.Update = updateFunc;
     return obj;
 };
 
@@ -72,7 +72,7 @@ var MapCircle = function (location, size, region, drawfunc, updateFunc) {
     obj.Size = size;
     obj.Region = region;
     obj.Draw = drawfunc;
-    obj.Update = updateFunc
+    obj.Update = updateFunc;
     return obj;
 };
 
@@ -94,7 +94,7 @@ var MapCircleAnother = function (centerLocation, radius, region, drawfunc, updat
     obj.Radius = radius;
     obj.Region = region;
     obj.Draw = drawfunc;
-    obj.Update = updateFunc
+    obj.Update = updateFunc;
     return obj;
 };
 
@@ -190,6 +190,15 @@ var DrawFunc = {
         gameArea.closePath();
         gameArea.fillStyle = this.Region.toString();
         gameArea.fill();
+    },
+    DefaultButton: function () {
+        gameArea.fillStyle = this.BackgroundColor;
+        gameArea.fillRect(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
+    }
+};
+
+var UpdateFunc = {
+    None: function () {
     }
 };
 

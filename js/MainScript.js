@@ -5,8 +5,49 @@ var game;
 var unit = 20;
 
 $(function () {
-    Initialize();
+    //Initialize();
+    var jqCanvas = $("#gamearea");
+    jqCanvas.attr("width", 600).attr("height", 480);
+    gameArea = jqCanvas[0].getContext("2d");
+    mouseInput = new MouseInputState(jqCanvas);
+
+    var array = [];
+
+    array[0] = new MenuButton(new Location(60, 110), 3, new Size(150, 150), "单人游戏", "red", "black", controlsDraw, UpdateFunc.None, controlsOnClick, controlsOnMouseDown, controlsOnHover, controlsOnLeave);
+    array[1] = new MenuButton(new Location(60, 50), 1, new Size(40, 25), "def", "blue", "black", controlsDraw, UpdateFunc.None, controlsOnClick, controlsOnMouseDown, controlsOnHover, controlsOnLeave);
+    array[2] = new MenuButton(new Location(70, 50), 2, new Size(40, 25), "ghi", "yellow", "black", controlsDraw, UpdateFunc.None, controlsOnClick, controlsOnMouseDown, controlsOnHover, controlsOnLeave);
+
+    Utils.SortByZindex(array, true);
+
+    var menu = new GameMenu(array, new Size(600, 480), "gray");
+    setInterval(function () {
+        gameArea.clearRect(0, 0, 600, 480);
+        menu.Tick();
+    }, 1000 / 60);
 });
+
+function controlsDraw() {
+    gameArea.fillStyle = this.BackgroundColor;
+    gameArea.fillRect(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
+    gameArea.fillStyle = this.ForeColor;
+    gameArea.fillText(this.Text, this.Location.X + 20, this.Location.Y + 10, 99);
+}
+
+function controlsOnClick() {
+    this.ForeColor = "White";
+}
+
+function controlsOnMouseDown() {
+    this.BackgroundColor = "green";
+}
+
+function controlsOnHover() {
+    this.BackgroundColor = "orange";
+}
+
+function controlsOnLeave() {
+    this.BackgroundColor = "blue";
+}
 
 function Initialize() {
     var mapObjArray = [];
