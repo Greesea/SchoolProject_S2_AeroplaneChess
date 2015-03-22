@@ -24,75 +24,11 @@ var Utils = {
     },
 
     /**
-     * 检查点是否在对象范围中
-     * @param mapObject 对象
-     * @param location 点
-     * @returns {boolean} 布尔
+     * 依照Zindex进行排列(Zindex越大优先级越低)
+     * @param array 被排列的数组
+     * @param isDrawing true:从大到小 false:从小到大
      * @constructor
      */
-    AreaCheck: function (mapObject, location) {
-        var result;
-
-        if (mapObject.Type == "MapCircle") {
-            gameArea.save();
-            gameArea.beginPath();
-            gameArea.arc(mapObject.Location.X + (mapObject.Size.Width / 2.0), mapObject.Location.Y + (mapObject.Size.Height / 2.0), (mapObject.Size.Width > mapObject.Size.Height) ? (mapObject.Size.Height / 2.0) : (mapObject.Size.Width / 2.0), 0, Math.PI * 2, true);
-            gameArea.closePath();
-
-            result = gameArea.isPointInPath(location.X, location.Y);
-            gameArea.restore();
-        } else if (mapObject.Type == "MapCircleAnother") {
-            gameArea.save();
-            gameArea.beginPath();
-            gameArea.arc(mapObject.CenterLocation.X, mapObject.CenterLocation.Y, mapObject.Radius, 0, Math.PI * 2, true);
-            gameArea.closePath();
-
-            result = gameArea.isPointInPath(location.X, location.Y);
-            gameArea.restore();
-        } else if (mapObject.Type == "MapTriangle") {
-            gameArea.save();
-            gameArea.beginPath();
-
-            switch (mapObject.Direction) {
-                case TriangleDirection.TopLeft:
-                    gameArea.moveTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
-                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
-                    break;
-                case TriangleDirection.TopRight:
-                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
-                    break;
-                case TriangleDirection.BottomLeft:
-                    gameArea.moveTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
-                    break;
-                case TriangleDirection.BottomRight:
-                    gameArea.moveTo(mapObject.Location.X, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X, mapObject.Location.Y + mapObject.Size.Height);
-                    gameArea.moveTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y);
-                    gameArea.lineTo(mapObject.Location.X + mapObject.Size.Width, mapObject.Location.Y + mapObject.Size.Height);
-                    break;
-            }
-
-            gameArea.closePath();
-            result = gameArea.isPointInPath(location.X, location.Y);
-            gameArea.restore();
-        } else {
-            result = ((location.X >= mapObject.Location.X && location.X <= (mapObject.Location.X + mapObject.Size.Width)) && (location.Y >= mapObject.Location.Y && location.Y <= (mapObject.Location.Y + mapObject.Size.Height)));
-        }
-        return result;
-    },
-
     SortByZindex: function (array, isDrawing) {
         array.sort(function (o1, o2) {
             if (o1.Zindex > o2.Zindex) {
@@ -109,6 +45,53 @@ var Utils = {
             }
             return 0;
         });
+    },
+
+    /**
+     * 输入操作触发器
+     * @param objArray 被检测对象数组
+     * @param nowHover 当前悬浮对象
+     * @param nowPress 当前按下对象
+     * @param setHoverFunc 设置悬浮对象方法
+     * @param setPressFunc 设置按下对象方法
+     * @constructor
+     */
+    InputEventTrigger: function (objArray, nowHover, nowPress, setHoverFunc, setPressFunc) {
+        var array = [];
+        for (var i = 0; i < objArray.length; i++) {
+            if (objArray[i].AreaCheck(mouseInput.Location)) {
+                array.push(objArray[i]);
+            }
+
+            if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Down) {
+                if (nowPress == undefined) {
+                    if (array.length > 0) {
+                        setPressFunc(array[0]);
+                        array[0].OnMouseDown();
+                    }
+                }
+            } else if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Click) {
+                if (array.length > 0) {
+                    Utils.SortByZindex(array, false);
+                    array[0].OnMouseClick();
+                    setPressFunc(undefined);
+                }
+            } else {
+                if (array.length > 0) {
+                    Utils.SortByZindex(array, false);
+                    if (nowHover != array[0]) {
+                        setHoverFunc(array[0]);
+                        array[0].OnMouseHover();
+                    }
+                    return;
+                }
+
+                if (nowHover != undefined) {
+                    nowHover.OnMouseLeave();
+                    setHoverFunc(undefined);
+                }
+            }
+        }
     }
 };
 

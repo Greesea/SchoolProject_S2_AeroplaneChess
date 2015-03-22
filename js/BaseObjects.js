@@ -7,98 +7,6 @@
 var gameArea;
 
 /**
- * 地图元件：矩形
- * @param location  位置(左上角)
- * @param size      大小
- * @param region    所属玩家
- * @param canJump   能否跳跃
- * @param drawfunc      绘制方法
- * @returns {{}}
- * @constructor
- * @param updateFunc
- */
-var MapRect = function (location, size, region, canJump, drawfunc, updateFunc) {
-    var obj = {};
-    obj.Type = "MapRect";
-
-    obj.Location = location;
-    obj.Size = size;
-    obj.Region = region;
-    obj.CanJump = canJump;
-    obj.Draw = drawfunc;
-    obj.Update = updateFunc;
-    return obj;
-};
-
-/**
- * 地图元件：等腰三角形
- * @param location              位置(左上角)
- * @param size                  大小
- * @param region                所属玩家
- * @param triangleDirection     三角形方向
- * @param drawfunc                  绘制方法
- * @returns {{}}
- * @constructor
- * @param updateFunc
- */
-var MapTriangle = function (location, size, region, triangleDirection, drawfunc, updateFunc) {
-    var obj = {};
-    obj.Type = "MapTriangle";
-
-    obj.Location = location;
-    obj.Size = size;
-    obj.Region = region;
-    obj.Direction = triangleDirection;
-    obj.Draw = drawfunc;
-    obj.Update = updateFunc;
-    return obj;
-};
-
-/**
- * 地图元件：圆
- * @param location  位置(左上角)
- * @param size      大小
- * @param region    所属玩家
- * @param drawfunc      绘制方法
- * @returns {{}}
- * @constructor
- * @param updateFunc
- */
-var MapCircle = function (location, size, region, drawfunc, updateFunc) {
-    var obj = {};
-    obj.Type = "MapCircle";
-
-    obj.Location = location;
-    obj.Size = size;
-    obj.Region = region;
-    obj.Draw = drawfunc;
-    obj.Update = updateFunc;
-    return obj;
-};
-
-/**
- * 地图元件：高级圆
- * @param centerLocation    中心点
- * @param radius            半径
- * @param region            所属玩家
- * @param drawfunc              绘制方法
- * @returns {{}}
- * @constructor
- * @param updateFunc
- */
-var MapCircleAnother = function (centerLocation, radius, region, drawfunc, updateFunc) {
-    var obj = {};
-    obj.Type = "MapCircleAnother";
-
-    obj.CenterLocation = centerLocation;
-    obj.Radius = radius;
-    obj.Region = region;
-    obj.Draw = drawfunc;
-    obj.Update = updateFunc;
-    return obj;
-};
-
-/**
  * 类型：大小
  * @param width     宽度
  * @param height    高度
@@ -130,74 +38,34 @@ var Location = function (x, y) {
     return obj;
 };
 
-/**
- * 绘制方法
- * @type {{FilledRect: FilledRect, FilledTriangle: FilledTriangle, FilledCircle: FilledCircle, FilledCircleAnother: FilledCircleAnother}}
- */
-var DrawFunc = {
-    FilledRect: function () {
-        gameArea.fillStyle = this.Region.toString();
-        gameArea.fillRect(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
+var Functions = {
+    /**
+     * 命中检查
+     * @param location 被验证的坐标
+     * @returns {boolean} 是否命中
+     * @constructor
+     */
+    AreaCheck: function (location) {
+        return (location.X >= this.X() && location.X <= this.X() + this.Width()) && (location.Y >= this.Y() && location.Y <= this.Y() + this.Height());
     },
-    FilledTriangle: function () {
-        gameArea.beginPath();
-
-        switch (this.Direction) {
-            case TriangleDirection.TopLeft:
-                gameArea.moveTo(this.Location.X + this.Size.Width, this.Location.Y + this.Size.Height);
-                gameArea.lineTo(this.Location.X, this.Location.Y + this.Size.Height);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y);
-                gameArea.moveTo(this.Location.X, this.Location.Y + this.Size.Height);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y);
-                break;
-            case TriangleDirection.TopRight:
-                gameArea.moveTo(this.Location.X, this.Location.Y + this.Size.Height);
-                gameArea.lineTo(this.Location.X, this.Location.Y);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y + this.Size.Height);
-                gameArea.moveTo(this.Location.X, this.Location.Y);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y + this.Size.Height);
-                break;
-            case TriangleDirection.BottomLeft:
-                gameArea.moveTo(this.Location.X + this.Size.Width, this.Location.Y);
-                gameArea.lineTo(this.Location.X, this.Location.Y);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y + this.Size.Height);
-                gameArea.moveTo(this.Location.X, this.Location.Y);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y + this.Size.Height);
-                break;
-            case TriangleDirection.BottomRight:
-                gameArea.moveTo(this.Location.X, this.Location.Y);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y);
-                gameArea.lineTo(this.Location.X, this.Location.Y + this.Size.Height);
-                gameArea.moveTo(this.Location.X + this.Size.Width, this.Location.Y);
-                gameArea.lineTo(this.Location.X + this.Size.Width, this.Location.Y + this.Size.Height);
-                break;
-        }
-
-        gameArea.closePath();
-        gameArea.fillStyle = this.Region.toString();
-        gameArea.fill();
-    },
-    FilledCircle: function () {
-        gameArea.beginPath();
-        gameArea.arc(this.Location.X + (this.Size.Width / 2.0), this.Location.Y + (this.Size.Height / 2.0), (this.Size.Width > this.Size.Height) ? (this.Size.Height / 2.0) : (this.Size.Width / 2.0), 0, Math.PI * 2, true);
-        gameArea.closePath();
-        gameArea.fillStyle = this.Region.toString();
-        gameArea.fill();
-    },
-    FilledCircleAnother: function () {
-        gameArea.beginPath();
-        gameArea.arc(this.CenterLocation.X, this.CenterLocation.Y, this.Radius, 0, Math.PI * 2, true);
-        gameArea.closePath();
-        gameArea.fillStyle = this.Region.toString();
-        gameArea.fill();
-    },
-    DefaultButton: function () {
-        gameArea.fillStyle = this.BackgroundColor;
-        gameArea.fillRect(this.Location.X, this.Location.Y, this.Size.Width, this.Size.Height);
+    /**
+     * 绘制菜单按钮
+     * @constructor
+     */
+    DrawMenuButton: function () {
+        gameArea.fillStyle = this.BackColor;
+        gameArea.fillRect(this.X(), this.Y(), this.Width(), this.Height());
+        gameArea.fillStyle = this.ForeColor;
+        gameArea.font = this.Font;
+        gameArea.fillText(this.Text, this.TextLocation().X, this.TextLocation().Y, 9999);
     }
 };
 
-var UpdateFunc = {
+var EventFunctions = {
+    /**
+     * 无动作
+     * @constructor
+     */
     None: function () {
     }
 };
@@ -212,17 +80,6 @@ var Region = {
     Blue: "blue",
     Orange: "orange",
     Yellow: "yellow"
-};
-
-/**
- * 枚举：三角形方向
- * @type {{TopLeft: number, TopRight: number, BottomLeft: number, BottomRight: number}}
- */
-var TriangleDirection = {
-    TopLeft: 0,
-    TopRight: 1,
-    BottomLeft: 2,
-    BottomRight: 3
 };
 
 /**

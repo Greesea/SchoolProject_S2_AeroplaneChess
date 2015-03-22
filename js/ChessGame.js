@@ -1,78 +1,126 @@
 /**
  * Created by Drake on 2015/3/19.
  */
-var Game = function (MapObjects) {
+
+/**
+ * 场景管理器
+ * @param gameMenu 初始菜单
+ * @returns {{}}
+ * @constructor
+ */
+var Game = function (gameMenu) {
     var obj = {};
     obj.Type = "Game";
 
-    obj.MapObjs = MapObjects;
+    obj.Menu = gameMenu;
+
+    /**
+     * 开始游戏
+     * @constructor
+     */
     obj.GameStart = function () {
         setInterval(function () {
             gameArea.clearRect(0, 0, 600, 480);
-            for (var i = 0; i < obj.MapObjs.length; i++) {
-                if (obj.MapObjs[i].Update != null)
-                    obj.MapObjs[i].Update();
-                if (obj.MapObjs[i].Draw != null)
-                    obj.MapObjs[i].Draw();
-            }
+
+            gameMenu.Draw();
+
             mouseInput.ClearClickState();
         }, (1000 / 100));
     };
     return obj;
 };
 
-var GameMenu = function (controls, size, backgroundColor) {
+/**
+ * 游戏选单
+ * @param controls 控件列表
+ * @param background 背景(Image or 颜色字符串)
+ * @returns {{}}
+ * @constructor
+ */
+var GameMenu = function (controls, background) {
     var obj = {};
     obj.Type = "GameMenu";
+
     obj.Controls = controls;
-    obj.Size = size;
-    obj.BackgroundColor = backgroundColor;
+    obj.Background = background;
+    obj.Location = new Location(0, 0);
     var nowHover;
-    var nowDown;
+    var nowPress;
 
-    obj.Tick = function () {
-        var array = [];
+    /**
+     * 横坐标
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location.X;
+    };
+
+    /**
+     * 纵坐标
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location.Y;
+    };
+
+    /**
+     * 排列控件深度(在对控件列表进行添加删除或修改了控件的深度之后调用本方法来应用正确的渲染深度)
+     * @constructor
+     */
+    obj.SortControls = function () {
+        Utils.SortByZindex(obj.Controls, true);
+    };
+
+    /**
+     * 绑定数组里所有控件的父级对象为本菜单
+     * @constructor
+     */
+    obj.BindAllParent = function () {
         for (var i = 0; i < obj.Controls.length; i++) {
-            if (Utils.AreaCheck(obj.Controls[i], mouseInput.Location)) {
-                array.push(obj.Controls[i]);
-            }
+            obj.Controls[i].Parent = this;
         }
-        if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Down) {
-            if (nowDown == undefined) {
-                if (array.length > 0) {
-                    nowDown = array[0];
-                    nowDown.OnMouseDown();
-                }
-            }
-        }
-        else if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Click) {
-            if (array.length > 0) {
-                Utils.SortByZindex(array, false);
-                array[0].OnClick();
-                nowDown = undefined;
-            }
+    };
+
+    /**
+     * 设置悬停对象
+     * @param hover
+     */
+    obj.setHover = function (hover) {
+        nowHover = hover;
+    };
+
+    /**
+     * 设置按下对象
+     * @param press
+     */
+    obj.setPress = function (press) {
+        nowPress = press;
+    };
+
+    /**
+     * 绘制
+     * @constructor
+     */
+    obj.Draw = function () {
+        Utils.InputEventTrigger(obj.Controls, nowHover, nowPress, obj.setHover, obj.setPress);
+
+        if (obj.Background instanceof Image) {
+            gameArea.drawImage(obj.Background, 0, 0);
         } else {
-            if (nowHover != undefined) {
-                nowHover.OnLeave();
-                nowHover = undefined;
-            }
-
-            if (array.length > 0) {
-                Utils.SortByZindex(array, false);
-                nowHover = array[0];
-                nowHover.OnHover();
-            }
+            gameArea.fillStyle = obj.Background;
+            gameArea.fillRect(this.X(), this.Y(), 800, 480);
         }
 
-        gameArea.fillStyle = obj.BackgroundColor;
-        gameArea.fillRect(0, 0, obj.Size.Width, obj.Size.Height);
         for (var i = 0; i < obj.Controls.length; i++) {
             obj.Controls[i].Update();
             obj.Controls[i].Draw();
         }
-
-        mouseInput.ClearClickState();
     };
+
+    obj.SortControls();
+    obj.BindAllParent();
 
     return obj;
 };
