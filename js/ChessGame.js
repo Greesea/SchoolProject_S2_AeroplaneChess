@@ -10,8 +10,15 @@
  */
 var Game = function (gameMenu) {
     var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
     obj.Type = "Game";
 
+    /**
+     * 正在渲染的菜单
+     */
     obj.Menu = gameMenu;
 
     /**
@@ -39,10 +46,26 @@ var Game = function (gameMenu) {
  */
 var GameMenu = function (controls, background) {
     var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
     obj.Type = "GameMenu";
 
+    /**
+     * 控件列表
+     */
     obj.Controls = controls;
+
+    /**
+     * 背景(Image or 颜色字符串)
+     */
     obj.Background = background;
+
+    /**
+     * 坐标
+     * @type {Location}
+     */
     obj.Location = new Location(0, 0);
     var nowHover;
     var nowPress;
@@ -114,7 +137,8 @@ var GameMenu = function (controls, background) {
         }
 
         for (var i = 0; i < obj.Controls.length; i++) {
-            obj.Controls[i].Update();
+            if (obj.Controls[i].Update != undefined)
+                obj.Controls[i].Update();
             obj.Controls[i].Draw();
         }
     };

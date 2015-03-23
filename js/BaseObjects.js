@@ -38,6 +38,10 @@ var Location = function (x, y) {
     return obj;
 };
 
+/**
+ * 动作集
+ * @type {{AreaCheck: AreaCheck, DrawMenuButton: DrawMenuButton, DrawMenuTitle: DrawMenuTitle}}
+ */
 var Functions = {
     /**
      * 命中检查
@@ -48,6 +52,7 @@ var Functions = {
     AreaCheck: function (location) {
         return (location.X >= this.X() && location.X <= this.X() + this.Width()) && (location.Y >= this.Y() && location.Y <= this.Y() + this.Height());
     },
+
     /**
      * 绘制菜单按钮
      * @constructor
@@ -58,9 +63,30 @@ var Functions = {
         gameArea.fillStyle = this.ForeColor;
         gameArea.font = this.Font;
         gameArea.fillText(this.Text, this.TextLocation().X, this.TextLocation().Y, 9999);
+    },
+
+    /**
+     * 绘制菜单标题
+     * @constructor
+     */
+    DrawMenuTitle: function () {
+        if (this.Background instanceof Image) {
+            gameArea.drawImage(this.Background, 0, 0);
+        } else {
+            gameArea.fillStyle = this.Background;
+            gameArea.fillRect(this.X(), this.Y(), 50, 50);
+        }
+
+        gameArea.fillStyle = this.ForeColor;
+        gameArea.font = this.Font;
+        gameArea.fillText(this.Text, this.X() + 55, this.Y() + 40, 999);
     }
 };
 
+/**
+ * 事件动作集
+ * @type {{None: None}}
+ */
 var EventFunctions = {
     /**
      * 无动作

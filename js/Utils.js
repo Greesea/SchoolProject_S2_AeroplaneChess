@@ -57,40 +57,47 @@ var Utils = {
      * @constructor
      */
     InputEventTrigger: function (objArray, nowHover, nowPress, setHoverFunc, setPressFunc) {
+        var mouseLoc = new Location(mouseInput.Location.X, mouseInput.Location.Y);
+
         var array = [];
         for (var i = 0; i < objArray.length; i++) {
-            if (objArray[i].AreaCheck(mouseInput.Location)) {
-                array.push(objArray[i]);
+            if (objArray[i].AreaCheck == undefined) {
+                continue;
             }
 
-            if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Down) {
-                if (nowPress == undefined) {
-                    if (array.length > 0) {
-                        setPressFunc(array[0]);
-                        array[0].OnMouseDown();
-                    }
-                }
-            } else if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Click) {
-                if (array.length > 0) {
-                    Utils.SortByZindex(array, false);
-                    array[0].OnMouseClick();
-                    array[0].OnMouseHover();
-                    setPressFunc(undefined);
-                }
-            } else {
-                if (array.length > 0) {
-                    Utils.SortByZindex(array, false);
-                    if (nowHover != array[0]) {
-                        setHoverFunc(array[0]);
-                        array[0].OnMouseHover();
-                    }
-                    return;
-                }
+            if (objArray[i].AreaCheck(mouseLoc)) {
+                array.push(objArray[i]);
+            }
+        }
 
-                if (nowHover != undefined) {
-                    nowHover.OnMouseLeave();
-                    setHoverFunc(undefined);
+        if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Down) {
+            if (nowPress == undefined) {
+                if (array.length > 0) {
+                    Utils.SortByZindex(array, false);
+                    setPressFunc(array[0]);
+                    array[0].OnMouseDown(mouseLoc);
                 }
+            }
+        } else if (mouseInput.GetState(MouseButton.LeftButton) == MouseState.Click) {
+            if (array.length > 0) {
+                Utils.SortByZindex(array, false);
+                array[0].OnMouseClick(mouseLoc);
+                array[0].OnMouseHover(mouseLoc);
+                setPressFunc(undefined);
+            }
+        } else {
+            if (array.length > 0) {
+                Utils.SortByZindex(array, false);
+                if (nowHover != array[0]) {
+                    setHoverFunc(array[0]);
+                    array[0].OnMouseHover(mouseLoc);
+                }
+                return;
+            }
+
+            if (nowHover != undefined) {
+                nowHover.OnMouseLeave(mouseLoc);
+                setHoverFunc(undefined);
             }
         }
     }
