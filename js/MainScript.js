@@ -42,6 +42,7 @@ function Initialize() {
     array[1] = new MenuButton(null, new Location(60, 280), 1, new Size(150, 150), "单人游戏", "20pt 微软雅黑", new Location(22, 83), "red", "white", Functions.AreaCheck, Functions.DrawMenuButton, null, controlsOnClick, controlsOnMouseDown, controlsOnHover, controlsOnLeave);
     array[2] = new MenuTitle(null, new Location(40, 30), 1, "Title", "18pt 微软雅黑", "blue", "white", Functions.DrawMenuTitle);
     array[3] = new DropdownBox(null, new Location(270, 110), 1, new Size(120, 35), [1, 2, 3, 4], 2, "14pt 微软雅黑", new Location(54, 23), "red", "white", "black", dropdownClick, null, null, null);
+    array[4] = new Label(null, new Location(270, 316), 1, "Label", "36pt 微软雅黑", "white");
 
     //var img = new Image();
     //img.src = "../images/MainMenu.png";

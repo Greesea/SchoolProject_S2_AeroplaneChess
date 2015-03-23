@@ -299,7 +299,7 @@ var MenuTitle = function (parent, location, zindex, text, font, background, fore
  * @param font 字体信息
  * @param textOffset 文本偏移量
  * @param backColor 背景色
- * @param foreColor 前景色
+ * @param foreColor 前景色(文本颜色)
  * @param borderColor 边框颜色
  * @param onMouseClickFunc 鼠标单击方法(可为null)
  * @param onMouseDownFunc 鼠标按下方法(可为null)
@@ -595,6 +595,96 @@ var DropdownBox = function (parent, location, zindex, itemSize, valueArray, nowS
 
         items.push(o);
     }
+
+    return obj;
+};
+
+/**
+ * 文本控件
+ * @param parent 下拉菜单
+ * @param location 父级菜单(可赋值也可以不赋值 在创建GameMenu的时候会自动绑定parent)
+ * @param zindex 坐标(相对父级)
+ * @param text 渲染深度
+ * @param font 字体信息
+ * @param foreColor 前景色(文本颜色)
+ * @returns {{}}
+ * @constructor
+ */
+var Label = function (parent, location, zindex, text, font, foreColor) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "Label";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 坐标
+     */
+    var loc = location;
+
+    /**
+     * 渲染深度
+     */
+    obj.Zindex = zindex;
+
+    /**
+     * 文本
+     */
+    obj.Text = text;
+
+    /**
+     * 字体信息
+     * @type {string}
+     */
+    obj.Font = (font == null) ? "" : font;
+
+    /**
+     * 前景色(文本颜色)
+     */
+    obj.ForeColor = foreColor;
+
+    /**
+     * 坐标(相对父级)
+     * @returns {Location}
+     * @constructor
+     */
+    obj.Location = function () {
+        return new Location(obj.Parent.X() + loc.X, obj.Parent.Y() + loc.Y);
+    };
+
+    /**
+     * 横坐标(相对父级)
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location().X;
+    };
+
+    /**
+     * 纵坐标(相对父级)
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location().Y;
+    };
+
+    /**
+     * 渲染
+     * @constructor
+     */
+    obj.Draw = function () {
+        gameArea.fillStyle = obj.ForeColor;
+        gameArea.font = obj.Font;
+        gameArea.fillText(obj.Text, obj.X(), obj.Y(), 9999);
+    };
 
     return obj;
 };
