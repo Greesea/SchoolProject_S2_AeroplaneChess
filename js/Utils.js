@@ -86,18 +86,22 @@ var Utils = {
                 setPressFunc(undefined);
             }
         } else {
-            if (array.length > 0) {
-                Utils.SortByZindex(array, false);
-                if (nowHover != array[0]) {
-                    setHoverFunc(array[0]);
-                    array[0].OnMouseHover(mouseLoc);
-                }
-                return;
-            }
-
             if (nowHover != undefined) {
-                nowHover.OnMouseLeave(mouseLoc);
-                setHoverFunc(undefined);
+                if (array.length > 0) {
+                    if (array[i] != nowHover) {
+                        nowHover.OnMouseLeave();
+                        array[0].OnMouseHover();
+                        setHoverFunc(array[0]);
+                    }
+                } else {
+                    nowHover.OnMouseLeave();
+                    setHoverFunc(undefined);
+                }
+            } else {
+                if (array.length > 0) {
+                    array[0].OnMouseHover(mouseLoc);
+                    setHoverFunc(array[0]);
+                }
             }
         }
     }

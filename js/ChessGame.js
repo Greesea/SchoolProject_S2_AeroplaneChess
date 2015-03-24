@@ -22,6 +22,30 @@ var Game = function (gameMenu) {
     obj.Menu = gameMenu;
 
     /**
+     * 菜单切换
+     */
+    var swapMenu;
+
+    /**
+     * 切换状态
+     */
+    var nowSwaping;
+
+    /**
+     * 切换菜单
+     * @param menu
+     * @constructor
+     */
+    obj.SwapToMenu = function (menu) {
+        if (!nowSwaping && menu != undefined && menu != null) {
+            swapMenu = menu;
+            nowSwaping = true;
+
+            swapMenu.Location = new Location(700, 0);
+        }
+    };
+
+    /**
      * 开始游戏
      * @constructor
      */
@@ -29,7 +53,25 @@ var Game = function (gameMenu) {
         setInterval(function () {
             gameArea.clearRect(0, 0, 600, 480);
 
+            if (nowSwaping) {
+                gameMenu.Location = new Location(gameMenu.X() - 8, gameMenu.Y());
+            }
+
             gameMenu.Draw();
+
+            if (nowSwaping) {
+                swapMenu.Location = new Location(swapMenu.X() - 8, swapMenu.Y());
+                if (swapMenu.X() <= 0) {
+                    gameMenu = swapMenu;
+                    gameMenu.Location = new Location(0, 0);
+                    swapMenu = undefined;
+                    nowSwaping = false;
+
+                    gameMenu.Draw();
+                } else {
+                    swapMenu.Draw();
+                }
+            }
 
             mouseInput.ClearClickState();
         }, (1000 / 100));
@@ -67,7 +109,15 @@ var GameMenu = function (controls, background) {
      * @type {Location}
      */
     obj.Location = new Location(0, 0);
+
+    /**
+     * 现在悬停
+     */
     var nowHover;
+
+    /**
+     * 现在按下
+     */
     var nowPress;
 
     /**
@@ -130,10 +180,10 @@ var GameMenu = function (controls, background) {
         Utils.InputEventTrigger(obj.Controls, nowHover, nowPress, obj.setHover, obj.setPress);
 
         if (obj.Background instanceof Image) {
-            gameArea.drawImage(obj.Background, 0, 0);
+            gameArea.drawImage(obj.Background, this.X(), this.Y());
         } else {
             gameArea.fillStyle = obj.Background;
-            gameArea.fillRect(this.X(), this.Y(), 800, 480);
+            gameArea.fillRect(this.X(), this.Y(), 700, 480);
         }
 
         for (var i = 0; i < obj.Controls.length; i++) {
