@@ -31,15 +31,28 @@ var Game = function (gameMenu) {
      */
     var nowSwaping;
 
+    //-----时间计时
+    var time;
+
     /**
      * 切换菜单
      * @param menu
      * @constructor
      */
     obj.SwapToMenu = function (menu) {
-        if (!nowSwaping && menu != undefined && menu != null) {
+        //  !!menu等效menu!=undefined && menu!=null
+        //  !! = 强制转换成bool
+        //  过程：
+        //  menu!=undefined && menu!=null
+        //  menu==(!!undefined)&&menu==(!!null)
+        //  menu==true&&menu==true
+        //  !!menu
+        if (!nowSwaping && !!menu) {
             swapMenu = menu;
             nowSwaping = true;
+
+            //-----时间计时
+            time = new Date();
 
             swapMenu.Location = new Location(700, 0);
         }
@@ -66,6 +79,11 @@ var Game = function (gameMenu) {
                     gameMenu.Location = new Location(0, 0);
                     swapMenu = undefined;
                     nowSwaping = false;
+
+                    //-----时间计时
+                    var endTime = new Date();
+                    $("#output").html(endTime - time);
+                    //-----
 
                     gameMenu.Draw();
                 } else {
