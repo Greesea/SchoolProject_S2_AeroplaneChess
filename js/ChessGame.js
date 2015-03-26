@@ -50,6 +50,7 @@ var Game = function (gameMenu) {
         if (!nowSwaping && !!menu) {
             swapMenu = menu;
             nowSwaping = true;
+            gameMenu.ClearControlState();
 
             //-----时间计时
             time = new Date();
@@ -171,6 +172,18 @@ var GameMenu = function (controls, background) {
     obj.BindAllParent = function () {
         for (var i = 0; i < obj.Controls.length; i++) {
             obj.Controls[i].Parent = this;
+        }
+    };
+
+    /**
+     * 清除控件状态(比如展开的DropdownBox)
+     * @constructor
+     */
+    obj.ClearControlState = function () {
+        for (var i = 0; i < obj.Controls.length; i++) {
+            if (obj.Controls[i].Type == "DropdownBox") {
+                obj.Controls[i].isOpen = false;
+            }
         }
     };
 

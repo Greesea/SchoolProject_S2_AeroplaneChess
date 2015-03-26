@@ -193,7 +193,7 @@ var MenuButton = function (parent, location, zindex, size, text, font, textLocat
 /**
  * 菜单标题
  * @param parent 父级菜单(可赋值也可以不赋值 在创建GameMenu的时候会自动绑定parent)
- * @param location location 坐标(相对父级)
+ * @param location 坐标(相对父级)
  * @param zindex 渲染深度
  * @param text 文本
  * @param font 字体信息
@@ -685,6 +685,194 @@ var Label = function (parent, location, zindex, text, font, foreColor) {
         gameArea.font = obj.Font;
         gameArea.fillText(obj.Text, obj.X(), obj.Y(), 9999);
     };
+
+    return obj;
+};
+
+/**
+ * 游戏路径节点
+ * @param parent 父元素(GameViewer)
+ * @param location 坐标 相对父级
+ * @param region 所属玩家
+ * @param isTunnel 是否为通道
+ * @param isEndPort 是否为转向点(通向结束的直线)
+ * @returns {{}}
+ * @constructor
+ */
+var GameRouteNote = function (parent, location, region, isTunnel, isEndPort) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GameRouteNote";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 坐标
+     */
+    var loc = location;
+
+    /**
+     * 坐标(相对父级)
+     * @returns {Location}
+     * @constructor
+     */
+    obj.Location = function () {
+        return new Location(obj.Parent.X() + loc.X, obj.Parent.Y() + loc.Y);
+    };
+
+    /**
+     * 横坐标(相对父级)
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location().X;
+    };
+
+    /**
+     * 纵坐标(相对父级)
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location().Y;
+    };
+
+    /**
+     * 所属玩家
+     */
+    obj.Region = region;
+
+    /**
+     * 是否为通道
+     */
+    obj.IsTunnel = (isEndPort) ? false : true;
+
+    /**
+     * 是否为转向点(通向结束的直线)
+     */
+    obj.IsEndPort = isEndPort;
+
+    return obj;
+};
+
+/**
+ * 游戏通道配对
+ * @param startRouteNote 通道起始点
+ * @param endRouteNote 通道结束点
+ * @param affectGoalPath 所影响的终点路线
+ * @param affectPathIndex 所影响的终点路线节点索引
+ * @returns {{}}
+ * @constructor
+ */
+var GameTunnelPair = function (startRouteNote, endRouteNote, affectGoalPath, affectPathIndex) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GameTunnelPair";
+
+    /**
+     * 起始节点
+     */
+    obj.StartNote = startRouteNote;
+
+    /**
+     * 结束节点
+     */
+    obj.EndNote = endRouteNote;
+
+    /**
+     * 所影响的终点路线
+     */
+    obj.AffectGoalPath = affectGoalPath;
+
+    /**
+     * 所影响的终点路线节点索引
+     */
+    obj.AffectPathIndex = affectPathIndex;
+
+    return obj;
+};
+
+/**
+ * 游戏终点路线
+ * @param parent 父元素(GameViewer)
+ * @param locationArray 坐标集
+ * @param region 所属玩家
+ * @returns {{}}
+ * @constructor
+ */
+var GameGoalPath = function (parent, locationArray, region) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GameGoalPath";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 坐标集
+     */
+    var locArray = location;
+
+    /**
+     * 坐标集(相对父级)
+     * @returns {Array}
+     * @constructor
+     */
+    obj.Location = function () {
+        var result = [];
+        for (var i = 0; i < locArray.length; i++) {
+            result.push(new Location(obj.Parent.X() + locArray[i].X, obj.Parent.Y() + locArray[i].Y));
+        }
+        return result;
+    };
+
+    /**
+     * 横坐标集(相对父级)
+     * @returns {Array}
+     * @constructor
+     */
+    obj.X = function () {
+        var loc = obj.Location();
+        var result = [];
+        for (var i = 0; i < loc.length; i++) {
+            result.push(loc[i].X());
+        }
+        return result;
+    };
+
+    /**
+     * 纵坐标集(相对父级)
+     * @returns {Array}
+     * @constructor
+     */
+    obj.Y = function () {
+        var loc = obj.Location();
+        var result = [];
+        for (var i = 0; i < loc.length; i++) {
+            result.push(loc[i].Y());
+        }
+        return result;
+    };
+
+    /**
+     * 所属玩家
+     */
+    obj.Region = region;
 
     return obj;
 };
