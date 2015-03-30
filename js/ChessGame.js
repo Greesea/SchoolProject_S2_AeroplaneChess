@@ -229,3 +229,101 @@ var GameMenu = function (controls, background) {
 
     return obj;
 };
+
+/**
+ * 游戏逻辑处理
+ * @param routeArray 节点集
+ * @param goalArray 终点集
+ * @param pairArray 通道集
+ * @param playerArray 玩家集
+ * @returns {{}}
+ * @constructor
+ */
+var GameLogic = function (routeArray, goalArray, pairArray, playerArray) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GameLogic";
+
+    /**
+     * 路径集
+     */
+    obj.Routes = routeArray;
+
+    /**
+     * 终点路线集
+     */
+    obj.Goals = goalArray;
+
+    /**
+     * 通道配对集
+     */
+    obj.Pair = pairArray;
+
+    /**
+     * 玩家集
+     */
+    obj.Players = playerArray;
+
+    /**
+     * 坐标
+     * @type {Location}
+     */
+    obj.Location = new Location(0, 0);
+
+    /**
+     * 横坐标
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location.X;
+    };
+
+    /**
+     * 纵坐标
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location.Y;
+    };
+
+    return obj;
+};
+
+/**
+ * 玩家
+ * @param parent 父元素(GameLogic)
+ * @param hangar 机库
+ * @param planeArray 飞机集
+ * @returns {{}}
+ * @constructor
+ */
+var Player = function (parent, hangar, planeArray) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "Player";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 机库
+     */
+    obj.Hangar = hangar;
+
+    /**
+     * 飞机集
+     */
+    obj.Planes = planeArray;
+
+    return obj;
+};

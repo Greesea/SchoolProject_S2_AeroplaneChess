@@ -691,7 +691,7 @@ var Label = function (parent, location, zindex, text, font, foreColor) {
 
 /**
  * 游戏路径节点
- * @param parent 父元素(GameViewer)
+ * @param parent 父元素(GameLogic)
  * @param location 坐标 相对父级
  * @param region 所属玩家
  * @param isTunnel 是否为通道
@@ -804,7 +804,7 @@ var GameTunnelPair = function (startRouteNote, endRouteNote, affectGoalPath, aff
 
 /**
  * 游戏终点路线
- * @param parent 父元素(GameViewer)
+ * @param parent 父元素(GameLogic)
  * @param locationArray 坐标集
  * @param region 所属玩家
  * @returns {{}}
@@ -873,6 +873,201 @@ var GameGoalPath = function (parent, locationArray, region) {
      * 所属玩家
      */
     obj.Region = region;
+
+    return obj;
+};
+
+/**
+ * 游戏机库节点
+ * @param parent 父元素(GameHangar)
+ * @param location 坐标
+ * @returns {{}}
+ * @constructor
+ */
+var GameHangarNode = function (parent, location) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GameHangarNode";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 坐标
+     */
+    var loc = location;
+
+    /**
+     * 坐标(相对父级)
+     * @returns {Location}
+     * @constructor
+     */
+    obj.Location = function () {
+        return new Location(obj.Parent.X() + loc.X, obj.Parent.Y() + loc.Y);
+    };
+
+    /**
+     * 横坐标(相对父级)
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location().X;
+    };
+
+    /**
+     * 纵坐标(相对父级)
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location().Y;
+    };
+
+    return obj;
+};
+
+/**
+ * 游戏机库
+ * @param parent 父元素(Player)
+ * @param location 坐标
+ * @param region 所属玩家
+ * @param nodeArray 节点集
+ * @returns {{}}
+ * @constructor
+ */
+var GameHangar = function (parent, location, region, nodeArray) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GameHangar";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 坐标
+     */
+    var loc = location;
+
+    /**
+     * 坐标(相对父级)
+     * @returns {Location}
+     * @constructor
+     */
+    obj.Location = function () {
+        return new Location(obj.Parent.X() + loc.X, obj.Parent.Y() + loc.Y);
+    };
+
+    /**
+     * 横坐标(相对父级)
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location().X;
+    };
+
+    /**
+     * 纵坐标(相对父级)
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location().Y;
+    };
+
+    /**
+     * 所属玩家
+     */
+    obj.Region = region;
+
+    /**
+     * 节点集
+     */
+    obj.Nodes = nodeArray;
+
+    return obj;
+};
+
+/**
+ * 游戏飞机
+ * @param parent 父元素(Player)
+ * @param location 坐标
+ * @param region 所属玩家
+ * @param image 渲染图像
+ * @param rotate 旋转角度
+ * @returns {{}}
+ * @constructor
+ */
+var GamePlane = function (parent, location, region, image, rotate) {
+    var obj = {};
+    /**
+     * 类型
+     * @type {string}
+     */
+    obj.Type = "GamePlane";
+
+    /**
+     * 父元素
+     */
+    obj.Parent = parent;
+
+    /**
+     * 坐标
+     */
+    var loc = location;
+
+    /**
+     * 坐标(相对父级)
+     * @returns {Location}
+     * @constructor
+     */
+    obj.Location = function () {
+        return new Location(obj.Parent.X() + loc.X, obj.Parent.Y() + loc.Y);
+    };
+
+    /**
+     * 横坐标(相对父级)
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location().X;
+    };
+
+    /**
+     * 纵坐标(相对父级)
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location().Y;
+    };
+
+    /**
+     * 所属玩家
+     */
+    obj.Region = region;
+
+    /**
+     * 渲染图像
+     */
+    obj.Image = image;
+
+    /**
+     * 旋转角度
+     */
+    obj.Rotate = rotate;
 
     return obj;
 };
