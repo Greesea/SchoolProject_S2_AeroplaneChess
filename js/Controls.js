@@ -996,6 +996,39 @@ var GameHangar = function (parent, location, region, nodeArray) {
      */
     obj.Nodes = nodeArray;
 
+    /**
+     * 绑定所有控件的父元素
+     * @constructor
+     */
+    obj.BindAllParent = function () {
+        for (var i = 0; i < obj.Nodes.length; i++) {
+            obj.Nodes[i].Parent = this;
+        }
+    };
+
+    obj.BindAllParent();
+
+    return obj;
+};
+
+/**
+ * 飞机图像集
+ * @param front
+ * @param left
+ * @param right
+ * @param back
+ * @returns {{}}
+ * @constructor
+ */
+var PlaneImageList = function (front, left, right, back) {
+    var obj = {};
+    obj.Type = "PlaneImageList";
+
+    obj.Front = front;
+    obj.Left = left;
+    obj.Right = right;
+    obj.Back = back;
+
     return obj;
 };
 
@@ -1004,12 +1037,13 @@ var GameHangar = function (parent, location, region, nodeArray) {
  * @param parent 父元素(Player)
  * @param location 坐标
  * @param region 所属玩家
- * @param image 渲染图像
- * @param rotate 旋转角度
+ * @param imageList 渲染图像列表
+ * @param direction 方向
+ * @param onMouseClickFunc 鼠标单击方法(可为null)
  * @returns {{}}
  * @constructor
  */
-var GamePlane = function (parent, location, region, image, rotate) {
+var GamePlane = function (parent, location, region, imageList, direction, onMouseClickFunc) {
     var obj = {};
     /**
      * 类型
@@ -1033,7 +1067,7 @@ var GamePlane = function (parent, location, region, image, rotate) {
      * @constructor
      */
     obj.Location = function () {
-        return new Location(obj.Parent.X() + loc.X, obj.Parent.Y() + loc.Y);
+        return loc;
     };
 
     /**
@@ -1062,12 +1096,47 @@ var GamePlane = function (parent, location, region, image, rotate) {
     /**
      * 渲染图像
      */
-    obj.Image = image;
+    obj.ImageList = imageList;
 
     /**
-     * 旋转角度
+     * 方向
      */
-    obj.Rotate = rotate;
+    obj.Direction = direction;
+
+    /**
+     * 渲染
+     * @constructor
+     */
+    obj.Draw = function () {
+        var img;
+        switch (obj.Direction) {
+            case PlaneDirection.Front:
+                img = obj.ImageList.Front;
+                break;
+            case PlaneDirection.Left:
+                img = obj.ImageList.Left;
+                break;
+            case PlaneDirection.Right:
+                img = obj.ImageList.Right;
+                break;
+            case PlaneDirection.Back:
+                img = obj.ImageList.Back;
+                break;
+        }
+
+        gameArea.drawImage(img, this.X(), this.Y());
+    };
+
+    var MouseClick = (onMouseClickFunc == null) ? EventFunctions.None : onMouseClickFunc;
+
+    /**
+     * 鼠标点击时触发
+     * @param location 鼠标坐标
+     * @constructor
+     */
+    obj.OnMouseClick = function (location) {
+        MouseClick(obj);
+    };
 
     return obj;
 };

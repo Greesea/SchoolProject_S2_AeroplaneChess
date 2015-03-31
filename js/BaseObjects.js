@@ -109,7 +109,7 @@ var Region = {
 };
 
 /**
- * 浏览器类别
+ * 枚举：浏览器类别
  * @type {{Android: string, WindowsPhone: string, WindowsPhoneDesktop: string, Other: string}}
  */
 var Browsers = {
@@ -120,7 +120,7 @@ var Browsers = {
 };
 
 /**
- * 鼠标按键
+ * 枚举：鼠标按键
  * @type {{LeftButton: number, RightButton: number}}
  */
 var MouseButton = {
@@ -130,11 +130,22 @@ var MouseButton = {
 };
 
 /**
- * 鼠标按键状态
+ * 枚举：鼠标按键状态
  * @type {{None: number, Down: number, Click: number}}
  */
 var MouseState = {
     "None": 0,
     "Down": 1,
     "Click": 2
+};
+
+/**
+ * 枚举：飞机方向
+ * @type {{Front: number, Left: number, Right: number, Back: number}}
+ */
+var PlaneDirection = {
+    "Front": 0,
+    "Left": 1,
+    "Right": 2,
+    "Back": 3
 };

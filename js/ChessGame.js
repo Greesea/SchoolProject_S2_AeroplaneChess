@@ -81,6 +81,12 @@ var Game = function (gameMenu) {
                     swapMenu = undefined;
                     nowSwaping = false;
 
+                    if (gameMenu.Type == "GameViewer") {
+                        gameMenu.GameState = true;
+                    }
+
+                    console.log("swapComplete");
+
                     //-----时间计时
                     var endTime = new Date();
                     $("#output").html(endTime - time);
@@ -291,6 +297,30 @@ var GameLogic = function (routeArray, goalArray, pairArray, playerArray) {
         return obj.Location.Y;
     };
 
+    /**
+     * 绑定所有控件的父元素
+     * @constructor
+     */
+    obj.BindAllParent = function () {
+        for (var i = 0; i < obj.Routes.length; i++) {
+            obj.Routes[i].Parent = this;
+        }
+        for (var i = 0; i < obj.Goals.length; i++) {
+            obj.Goals[i].Parent = this;
+        }
+        for (var i = 0; i < obj.Players.length; i++) {
+            obj.Players[i].Parent = this;
+        }
+    };
+
+    obj.Draw = function () {
+        for (var i = 0; i < obj.Players.length; i++) {
+            obj.Players[i].Draw();
+        }
+    };
+
+    obj.BindAllParent();
+
     return obj;
 };
 
@@ -324,6 +354,108 @@ var Player = function (parent, hangar, planeArray) {
      * 飞机集
      */
     obj.Planes = planeArray;
+
+    /**
+     * 现在悬停
+     */
+    var nowHover;
+
+    /**
+     * 现在按下
+     */
+    var nowPress;
+
+    /**
+     * 绑定所有控件的父元素
+     * @constructor
+     */
+    obj.BindAllParent = function () {
+        for (var i = 0; i < obj.Hangar.length; i++) {
+            obj.Hangar[i].Parent = this;
+        }
+        for (var i = 0; i < obj.Planes.length; i++) {
+            obj.Planes[i].Parent = this;
+        }
+    };
+
+    /**
+     * 设置悬停对象
+     * @param hover
+     */
+    obj.setHover = function (hover) {
+        nowHover = hover;
+    };
+
+    /**
+     * 设置按下对象
+     * @param press
+     */
+    obj.setPress = function (press) {
+        nowPress = press;
+    };
+
+    obj.Draw = function () {
+        Utils.InputEventTrigger(obj.Planes, nowHover, nowPress, obj.setHover, obj.setPress);
+
+        for (var i = 0; i < obj.Planes.length; i++) {
+            obj.Planes[i].Draw();
+        }
+    };
+
+    obj.BindAllParent();
+
+    return obj;
+};
+
+var GameViewer = function (logic, boardImage, boardLocation) {
+    var obj = {};
+    obj.Type = "GameViewer";
+
+    obj.GameLogic = logic;
+
+    obj.BoardImage = boardImage;
+
+    obj.BoardLocation = boardLocation;
+
+    obj.GameState = false;
+
+    /**
+     * 坐标
+     * @type {Location}
+     */
+    obj.Location = new Location(0, 0);
+
+    /**
+     * 横坐标
+     * @returns {Location.X|Number}
+     * @constructor
+     */
+    obj.X = function () {
+        return obj.Location.X;
+    };
+
+    /**
+     * 纵坐标
+     * @returns {Location.Y|Number}
+     * @constructor
+     */
+    obj.Y = function () {
+        return obj.Location.Y;
+    };
+
+    /**
+     * 绘制
+     * @constructor
+     */
+    obj.Draw = function () {
+        if (obj.GameState) {
+            if (!!obj.BoardImage && !!obj.BoardLocation) {
+                gameArea.drawImage(obj.BoardImage, obj.BoardLocation.X, obj.BoardLocation.Y);
+            }
+
+            obj.GameLogic.Draw();
+        }
+    };
 
     return obj;
 };
