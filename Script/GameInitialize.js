@@ -105,7 +105,9 @@ function GameInitializeTestMenu() {
             if (!!icon.animate) {
                 icon.animate.targetLocArray.push(e.data.global.clone());
             } else {
-                icon.animate = moveAnimate(icon, [e.data.global.clone()], 45);
+                icon.animate = moveAnimate(icon, [e.data.global.clone()], 5, function () {
+                    alert("complete");
+                });
             }
         });
 
