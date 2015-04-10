@@ -5,17 +5,18 @@
 //创建渲染器
 var renderer = PIXI.autoDetectRenderer(800, 600);
 var nowStage;
-var stageArray;
+var stages;
 
 $(function () {
     document.body.appendChild(renderer.view);
-    stageArray = GameStages();
+    stages = Stages();
 
     GameInitializeMainMenu();
     GameInitializeTestMenu();
+    GameInitializeGameStage();
 
     //设置当前渲染
-    nowStage = stageArray.getStageByName("mainmenu");
+    nowStage = stages.getStageByName("mainmenu");
     //开始渲染
     rendererLoop();
 });
@@ -67,32 +68,62 @@ function GameInitializeMainMenu() {
         btn.addChild(btn.border);
 
         //绑定事件
-        bindBtnEffect(btn);
+        bindBtnEffect(btn, 0xffff00);
 
         if (i == 2) {
             btn
                 .on("click", function () {
-                    nowStage = stageArray.getStageByName("singleplaysettings");
+                    nowStage = stages.getStageByName("game");
                 })
-                .on("tap", function () {
-                    nowStage = stageArray.getStageByName("singleplaysettings");
-                });
         }
 
         stage.addChild(btn);
     }
 
-    var gamestage = new GameStage(stage, "mainmenu");
-    stageArray.list.push(gamestage);
+    var gamestage = new Stage(stage, "mainmenu");
+    stages.list.push(gamestage);
 }
 
+function GameInitializeGameStage() {
+    var route = [];
+
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(100, 50)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(150, 50)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(200, 50)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(250, 50)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(300, 50)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(350, 50)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(350, 100)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(350, 150)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(300, 150)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(250, 150)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(200, 150)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(150, 150)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(100, 150)));
+    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(100, 100)));
+
+    var hangar = [];
+    hangar.push(new GameHangar([new PIXI.Point(400, 350), new PIXI.Point(400, 400), new PIXI.Point(400, 450), new PIXI.Point(450, 400), new PIXI.Point(450, 450)], Region.player1, Direction.up));
+    hangar.push(new GameHangar([new PIXI.Point(600, 350),new PIXI.Point(600, 400), new PIXI.Point(600, 450), new PIXI.Point(650, 400), new PIXI.Point(650, 450)], Region.player3, Direction.up));
+
+    var gamelogic = new GameLogic(route, null, hangar);
+
+    var playerlogic = new PlayerLogic(null, [new GamePlayer(null, Region.player1, false), null, new GamePlayer(null, Region.player3, false), null]);
+
+    var view = new GameView(gamelogic, playerlogic);
+
+    var gamestage = new Stage(view.gameStage, "game");
+    stages.list.push(gamestage);
+}
+
+/*=====================TEST=====================*/
 function GameInitializeTestMenu() {
     var stage = new PIXI.Container();
     var background = PIXI.Sprite.fromImage("../Resources/MainMenu/background.png");
     background.interactive = true;
     stage.addChild(background);
 
-    var icon = new PIXI.Sprite(PIXI.Texture.fromImage("../Resources/tempPlaneImage.ico"));
+    var icon = new PIXI.Sprite(PIXI.Texture.fromImage("../Resources/InGame/PlaneImage.ico"));
     icon.anchor.set(0.5);
 
     icon.position.set(150, 150);
@@ -106,7 +137,7 @@ function GameInitializeTestMenu() {
                 icon.animate.targetLocArray.push(e.data.global.clone());
             } else {
                 icon.animate = moveAnimate(icon, [e.data.global.clone()], 5, function () {
-                    alert("complete");
+                    console.log("complete");
                 });
             }
         });
@@ -124,6 +155,6 @@ function GameInitializeTestMenu() {
     };
 
     //添加舞台到列表
-    var gamestage = new GameStage(stage, "singleplaysettings");
-    stageArray.list.push(gamestage);
+    var gamestage = new Stage(stage, "singleplaysettings");
+    stages.list.push(gamestage);
 }
