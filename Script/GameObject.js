@@ -120,7 +120,7 @@ var GamePlayer = function (parent, region, isAI) {
                     var sprite = new PIXI.Sprite(PIXI.Texture.fromImage("../Resources/InGame/PlaneImage.ico"));
                     sprite.interactive = true;
                     sprite.anchor.set(0.5);
-                    var pos = obj.parent.getPlaneLocation(plane);
+                    var pos = obj.parent.getPathLocation(plane.region, plane.whereAmI, plane.nowRouteIndex);
                     sprite.position.set(pos.x, pos.y);
                     sprite.width = 32;
                     sprite.height = 32;
@@ -132,6 +132,7 @@ var GamePlayer = function (parent, region, isAI) {
 
                     obj.parent.stage.addChild(sprite);
 
+                    plane.sprite = sprite;
                     obj.plane.push(plane);
                 }
             }
@@ -149,29 +150,68 @@ var PlayerLogic = function (parent, playerArray) {
     obj.logic = null;
     obj.stage = null;
 
-    obj.getPlaneLocation = function (plane) {
-        switch (plane.whereAmI) {
+    obj.getPathLocation = function (region, where, index) {
+        switch (where) {
             case "hangar":
                 for (var i = 0; i < obj.logic.hangar.length; i++) {
-                    if (obj.logic.hangar[i].region == plane.region) {
-                        return obj.logic.hangar[i].slotLocationArray[plane.nowRouteIndex];
+                    if (obj.logic.hangar[i].region == region) {
+                        return obj.logic.hangar[i].slotLocationArray[index];
                     }
                 }
                 break;
             case "node":
-                return obj.logic.route[plane.nowRouteIndex];
+                return obj.logic.route[index].location;
             case "end":
                 for (var i = 0; i < obj.logic.end.length; i++) {
-                    if (obj.logic.end[i].region == plane.region) {
-                        return obj.logic.end[i].nodeLocationArray[plane.nowRouteIndex];
+                    if (obj.logic.end[i].region == region) {
+                        return obj.logic.end[i].nodeLocationArray[index];
                     }
                 }
                 break;
         }
     };
 
-    obj.playerSelectPlane = function (plane) {
+    obj.playerSelectPlane = function (planeSprite) {
+        if (planeSprite.bindPlane.whereAmI == "hangar") {
+            if (planeSprite.bindPlane.nowRouteIndex == 0) {
+                planeSprite.animate = new moveAnimate(planeSprite, [obj.getPathLocation(null, "node", 4)], 15, function (e) {
+                    e.sender.bindPlane.nowRouteIndex = 4;
+                    e.sender.bindPlane.whereAmI = "node";
+                });
+            } else {
+                planeSprite.animate = new moveAnimate(planeSprite, [obj.getPathLocation(planeSprite.bindPlane.region, "hangar", 0)], 6, function (e) {
+                    e.sender.bindPlane.nowRouteIndex = 0;
+                });
+            }
+        }
+        else if (planeSprite.bindPlane.whereAmI == "node") {
+            var mov;
+            while (true) {
+                mov = Math.round(Math.random() * 6);
+                if (mov > 0) {
+                    break;
+                }
+            }
 
+            if (mov > 0) {
+                console.log(mov);
+
+                var path = [];
+                var over = false;
+                for (var i = planeSprite.bindPlane.nowRouteIndex + 1; i <= planeSprite.bindPlane.nowRouteIndex + mov; i++) {
+                    if (i >= obj.logic.route.length) {
+                        path.push(obj.getPathLocation(null, "node", i - obj.logic.route.length));
+                        over = true;
+                    } else {
+                        path.push(obj.getPathLocation(null, "node", i));
+                    }
+                }
+
+                planeSprite.animate = new moveAnimate(planeSprite, path, 6, function (e) {
+                    e.sender.bindPlane.nowRouteIndex = (over) ? planeSprite.bindPlane.nowRouteIndex + mov - obj.logic.route.length : planeSprite.bindPlane.nowRouteIndex + mov;
+                });
+            }
+        }
     };
 
     obj.bindObjParent = function () {
@@ -210,6 +250,18 @@ var GameView = function (gamelogic, playerlogic) {
             obj.playerLogic.player[i].createPlanes();
         }
     }
+
+    obj.gameStage.update = function () {
+        for (var i = 0; i < obj.playerLogic.player.length; i++) {
+            if (!!obj.playerLogic.player[i]) {
+                for (var j = 0; j < obj.playerLogic.player[i].plane.length; j++) {
+                    if (!!obj.playerLogic.player[i].plane[j].sprite.animate) {
+                        obj.playerLogic.player[i].plane[j].sprite.animate.update();
+                    }
+                }
+            }
+        }
+    };
 
     return obj;
 };
