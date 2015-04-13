@@ -10,7 +10,7 @@
  * @returns {*}
  */
 var moveAnimate = function (sender, targetLocArray, speed, callback) {
-    if (sender.position.x == targetLocArray[0].x && sender.position.y == targetLocArray[0].y) {
+    if ((sender.position.x == targetLocArray[0].x && sender.position.y == targetLocArray[0].y) || !sender) {
         return undefined;
     }
 
@@ -41,17 +41,51 @@ var moveAnimate = function (sender, targetLocArray, speed, callback) {
 
                 //判断路径点为当前点
                 if (obj.sender.position.x == obj.targetLocArray[obj.index].x && obj.sender.position.y == obj.targetLocArray[obj.index].y) {
-                    obj.sender.animate = undefined;
-                    callback(obj);
+                    if (!!callback(obj))
+                        obj.sender.animate = undefined;
+                } else {
+                    //计算每次动画所移动距离
+                    obj.perMoveX = obj.speed * (-(Math.cos(Math.atan2(obj.sender.position.x - obj.targetLocArray[obj.index].x, obj.sender.position.y - obj.targetLocArray[obj.index].y) - obj.an)));
+                    obj.perMoveY = obj.speed * (Math.sin(Math.atan2(obj.sender.position.x - obj.targetLocArray[obj.index].x, obj.sender.position.y - obj.targetLocArray[obj.index].y) - obj.an));
                 }
-
-                //计算每次动画所移动距离
-                obj.perMoveX = obj.speed * (-(Math.cos(Math.atan2(obj.sender.position.x - obj.targetLocArray[obj.index].x, obj.sender.position.y - obj.targetLocArray[obj.index].y) - obj.an)));
-                obj.perMoveY = obj.speed * (Math.sin(Math.atan2(obj.sender.position.x - obj.targetLocArray[obj.index].x, obj.sender.position.y - obj.targetLocArray[obj.index].y) - obj.an));
             } else {
-                obj.sender.animate = undefined;
-                callback(obj);
+                if (!!callback(obj))
+                    obj.sender.animate = undefined;
             }
+        }
+    };
+
+    return obj;
+};
+
+var switchAnimate = function (sender, picArray, speed, loop, callback) {
+    if (picArray.length <= 0 || !sender) {
+        return undefined;
+    }
+
+    var obj = {};
+
+    obj.sender = sender;
+    obj.picArray = picArray;
+    obj.index = 0;
+    obj.nowTimeout = 0;
+    obj.speed = speed;
+
+    obj.sender.texture = picArray[0];
+
+    obj.update = function () {
+        if (++obj.nowTimeout > 30 - speed) {
+            obj.nowTimeout = 0;
+            if (++obj.index >= picArray.length) {
+                if (loop) {
+                    obj.index = 0;
+                } else {
+                    if (!!callback(obj))
+                        obj.sender.animate = undefined;
+                    return;
+                }
+            }
+            obj.sender.texture = picArray[obj.index];
         }
     };
 

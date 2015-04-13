@@ -74,6 +74,9 @@ function GameInitializeMainMenu() {
             btn
                 .on("click", function () {
                     nowStage = stages.getStageByName("game");
+                    setTimeout(function () {
+                        nowStage.parentView.playerLogic.start();
+                    }, 2000);
                 })
         }
 
@@ -87,28 +90,75 @@ function GameInitializeMainMenu() {
 function GameInitializeGameStage() {
     var route = [];
 
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(100, 50)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(150, 50)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(200, 50)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(250, 50)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(300, 50)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(350, 50)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(350, 100)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(350, 150)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(300, 150)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(250, 150)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(200, 150)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(150, 150)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(100, 150)));
-    route.push(new GameRouteNode(Region.tableCorner, null, null, null, new PIXI.Point(100, 100)));
+    //从中间的红色节点为起始点
+    /*                            所属玩家         转向               结束到        跳跃到           路径点               */
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(450,77.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(479.5,77.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(509.5,77.5)));
+    route.push(new GameRouteNode(Region.player1, Direction.down,   null/*TODO*/, null, new PIXI.Point(543.5,88.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(554.5,121.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(554.5,151.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(542.5,184.5)));
+    route.push(new GameRouteNode(Region.player1, Direction.right,  null/*TODO*/, null, new PIXI.Point(565.5,207.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(599.5,196.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(627.5,196.5)));
+    route.push(new GameRouteNode(Region.player4, Direction.down,   null/*TODO*/, null, new PIXI.Point(660.5,208)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(672.5,240.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(672.5,270.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(672.5,300.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(672.5,330.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(672.5,359.5)));
+    route.push(new GameRouteNode(Region.player2, Direction.left,   null/*TODO*/, null, new PIXI.Point(661,392.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(627.5,404.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(599.5,404.5)));
+    route.push(new GameRouteNode(Region.player1, Direction.down,   null/*TODO*/, null, new PIXI.Point(565.5,393)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(543.5,416.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(554.5,449.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(554.5,479.5)));
+    route.push(new GameRouteNode(Region.player1, Direction.left,   null/*TODO*/, null, new PIXI.Point(543,513.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(509.5,524.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(479.5,524.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(449.5,524.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(420.5,524.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(390.5,524.5)));
+    route.push(new GameRouteNode(Region.player3, Direction.up,     null/*TODO*/, null, new PIXI.Point(357.5,513.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(346.5,479.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(346.5,449.5)));
+    route.push(new GameRouteNode(Region.player2, Direction.left,   null/*TODO*/, null, new PIXI.Point(357.5,416.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(333,393.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(301.5,404.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(271.5,404.5)));
+    route.push(new GameRouteNode(Region.player2, Direction.up,     null/*TODO*/, null, new PIXI.Point(237.5,393)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(226.5,359.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(226.5,329.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(226.5,300.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(226.5,270.5)));
+    route.push(new GameRouteNode(Region.player3, null,             null/*TODO*/, null, new PIXI.Point(226.5,241.5)));
+    route.push(new GameRouteNode(Region.player4, Direction.right,  null/*TODO*/, null, new PIXI.Point(238,207.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(270.5,196.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(300.5,196.5)));
+    route.push(new GameRouteNode(Region.player3, Direction.up,     null/*TODO*/, null, new PIXI.Point(334.5,207.5)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(357,184.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(345.5,151.5)));
+    route.push(new GameRouteNode(Region.player2, null,             null/*TODO*/, null, new PIXI.Point(345.5,121.5)));
+    route.push(new GameRouteNode(Region.player3, Direction.right,  null/*TODO*/, null, new PIXI.Point(356.5,88)));
+    route.push(new GameRouteNode(Region.player4, null,             null/*TODO*/, null, new PIXI.Point(390.5,77.5)));
+    route.push(new GameRouteNode(Region.player1, null,             null/*TODO*/, null, new PIXI.Point(420.5,77.5)));
 
     var hangar = [];
-    hangar.push(new GameHangar([new PIXI.Point(400, 350), new PIXI.Point(400, 400), new PIXI.Point(400, 450), new PIXI.Point(450, 400), new PIXI.Point(450, 450)], Region.player1, Direction.up));
-    hangar.push(new GameHangar([new PIXI.Point(600, 350),new PIXI.Point(600, 400), new PIXI.Point(600, 450), new PIXI.Point(650, 400), new PIXI.Point(650, 450)], Region.player3, Direction.up));
+    hangar.push(new GameHangar([new PIXI.Point(204.3, 186.6), new PIXI.Point(214.5, 115.81), new PIXI.Point(265.19, 115.81), new PIXI.Point(265.19, 64.5), new PIXI.Point(214.5, 64.5)], 42/*TODO*/, Region.player1, Direction.down));
+    hangar.push(new GameHangar([new PIXI.Point(566.1, 55.8), new PIXI.Point(634.5, 64.5), new PIXI.Point(634.5, 115.81), new PIXI.Point(685.19, 115.81), new PIXI.Point(685.19, 64.5)], 3/*TODO*/, Region.player2, Direction.left));
+    hangar.push(new GameHangar([new PIXI.Point(696.6, 413.1), new PIXI.Point(685.19, 484.5), new PIXI.Point(634.5, 484.5), new PIXI.Point(634.5, 535.81), new PIXI.Point(685.19, 535.81)], 16/*TODO*/, Region.player3, Direction.up));
+    hangar.push(new GameHangar([new PIXI.Point(337.92, 549.13), new PIXI.Point(265.19, 535.81), new PIXI.Point(265.19, 484.5), new PIXI.Point(214.5, 484.5), new PIXI.Point(214.5, 535.81)], 29/*TODO*/, Region.player4, Direction.right));
 
     var gamelogic = new GameLogic(route, null, hangar);
 
-    var playerlogic = new PlayerLogic(null, [new GamePlayer(null, Region.player1, false), null, new GamePlayer(null, Region.player3, false), null]);
+    var playerlogic = new PlayerLogic();
+    playerlogic.player[0] = new GamePlayer(null, Region.player1, false);
+    playerlogic.player[1] = new GamePlayer(null, Region.player2, false);
+    playerlogic.player[2] = new GamePlayer(null, Region.player3, false);
+    playerlogic.player[3] = new GamePlayer(null, Region.player4, false);
+    playerlogic.bindObjParent();
 
     var view = new GameView(gamelogic, playerlogic);
 

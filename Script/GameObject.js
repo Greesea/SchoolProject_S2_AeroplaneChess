@@ -29,8 +29,14 @@ var Stage = function (stage, name) {
 };
 
 var Utils = {
-    "NullFunc": function () {
-    }
+    NullFunc: function () {
+    },
+
+    GenerateRandomNum: function (min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    },
+
+    DiceAnimate: [PIXI.Texture.fromImage("../Resources/InGame/dice-1.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-2.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-3.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-4.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-5.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-6.png")]
 };
 
 var Region = {
@@ -69,10 +75,11 @@ var GameRouteEnd = function (nodeLocationArray, region) {
     return obj;
 };
 
-var GameHangar = function (slotLocationArray, region, direction) {
+var GameHangar = function (slotLocationArray, hangarOutIndex, region, direction) {
     var obj = {};
 
     obj.slotLocationArray = slotLocationArray;
+    obj.hangarOutIndex = hangarOutIndex;
     obj.region = region;
     obj.direction = direction;
 
@@ -114,10 +121,8 @@ var GamePlayer = function (parent, region, isAI) {
                 var hangar = obj.parent.logic.hangar[i];
                 for (var j = 0; j < hangar.slotLocationArray.length - 1; j++) {
                     var plane = new GamePlane(j + 1, "hangar", hangar.direction, obj.region);
-                    //***
-                    plane.name = i + "_" + j;
 
-                    var sprite = new PIXI.Sprite(PIXI.Texture.fromImage("../Resources/InGame/PlaneImage.ico"));
+                    var sprite = new PIXI.Sprite(PIXI.Texture.fromImage("../Resources/InGame/plane-p" + (obj.region + 1) + ".png"));
                     sprite.interactive = true;
                     sprite.anchor.set(0.5);
                     var pos = obj.parent.getPathLocation(plane.region, plane.whereAmI, plane.nowRouteIndex);
@@ -131,6 +136,7 @@ var GamePlayer = function (parent, region, isAI) {
                     });
 
                     obj.parent.stage.addChild(sprite);
+                    obj.parent.parent.containsAnimate.push(sprite);
 
                     plane.sprite = sprite;
                     obj.plane.push(plane);
@@ -142,11 +148,12 @@ var GamePlayer = function (parent, region, isAI) {
     return obj;
 };
 
-var PlayerLogic = function (parent, playerArray) {
+var PlayerLogic = function () {
     var obj = {};
 
-    obj.parent = parent;
-    obj.player = playerArray;
+    obj.parent = null;
+    obj.player = [null, null, null, null];
+    obj.nowPlayer = -1;
     obj.logic = null;
     obj.stage = null;
 
@@ -171,16 +178,56 @@ var PlayerLogic = function (parent, playerArray) {
         }
     };
 
+    //TODO 完善游戏开始部分
+    obj.start = function () {
+        console.log("run");
+
+        var resultList = [0, 0, 0, 0];
+        var spriteList = [];
+        var posList = [new PIXI.Point(50, 50), new PIXI.Point(50, 100), new PIXI.Point(50, 150), new PIXI.Point(50, 200)];
+
+        for (var i = 0; i < 4; i++) {
+            resultList[i] = Utils.GenerateRandomNum(1, 6);
+
+            var sprite = new PIXI.Sprite(Utils.DiceAnimate[0]);
+            sprite.anchor.set(0.5);
+            sprite.width = 45;
+            sprite.height = 48;
+            sprite.position.set(posList[i].x, posList[i].y);
+            sprite.animate = switchAnimate(sprite, Utils.DiceAnimate, 25, true, Utils.NullFunc);
+            sprite.diceValue = resultList[i];
+
+            sprite.interactive = true;
+            sprite.on("click", function () {
+                console.log(this);
+                this.animate = undefined;
+                this.texture = Utils.DiceAnimate[this.diceValue];
+            });
+
+            obj.parent.containsAnimate.push(sprite);
+            obj.stage.addChild(sprite);
+
+            spriteList.push(sprite);
+        }
+    };
+
     obj.playerSelectPlane = function (planeSprite) {
         if (planeSprite.bindPlane.whereAmI == "hangar") {
             if (planeSprite.bindPlane.nowRouteIndex == 0) {
-                planeSprite.animate = new moveAnimate(planeSprite, [obj.getPathLocation(null, "node", 4)], 15, function (e) {
-                    e.sender.bindPlane.nowRouteIndex = 4;
-                    e.sender.bindPlane.whereAmI = "node";
-                });
+                for (var i = 0; i < obj.logic.hangar.length; i++) {
+                    if (planeSprite.bindPlane.region == obj.logic.hangar[i].region) {
+                        planeSprite.animate = moveAnimate(planeSprite, [obj.getPathLocation(null, "node", obj.logic.hangar[i].hangarOutIndex)], 15, function (e) {
+                            e.sender.bindPlane.nowRouteIndex = e.complete;
+                            e.sender.bindPlane.whereAmI = "node";
+                            return true;
+                        });
+                        planeSprite.animate.complete = obj.logic.hangar[i].hangarOutIndex;
+                    }
+                }
             } else {
-                planeSprite.animate = new moveAnimate(planeSprite, [obj.getPathLocation(planeSprite.bindPlane.region, "hangar", 0)], 6, function (e) {
+                planeSprite.animate = moveAnimate(planeSprite, [obj.getPathLocation(planeSprite.bindPlane.region, "hangar", 0)], 6, function (e) {
                     e.sender.bindPlane.nowRouteIndex = 0;
+                    return true;
                 });
             }
         }
@@ -194,8 +241,6 @@ var PlayerLogic = function (parent, playerArray) {
             }
 
             if (mov > 0) {
-                console.log(mov);
-
                 var path = [];
                 var over = false;
                 for (var i = planeSprite.bindPlane.nowRouteIndex + 1; i <= planeSprite.bindPlane.nowRouteIndex + mov; i++) {
@@ -207,8 +252,9 @@ var PlayerLogic = function (parent, playerArray) {
                     }
                 }
 
-                planeSprite.animate = new moveAnimate(planeSprite, path, 6, function (e) {
+                planeSprite.animate = moveAnimate(planeSprite, path, 6, function (e) {
                     e.sender.bindPlane.nowRouteIndex = (over) ? planeSprite.bindPlane.nowRouteIndex + mov - obj.logic.route.length : planeSprite.bindPlane.nowRouteIndex + mov;
+                    return true;
                 });
             }
         }
@@ -233,9 +279,15 @@ var GameView = function (gamelogic, playerlogic) {
     obj.gameLogic = gamelogic;
     obj.playerLogic = playerlogic;
     obj.gameStage = new PIXI.Container();
+    obj.containsAnimate = [];
+
+    obj.gameStage.parentView = obj;
 
     var background = PIXI.Sprite.fromImage("../Resources/MainMenu/background.png");
     obj.gameStage.addChild(background);
+
+    var board = PIXI.Sprite.fromImage("../Resources/InGame/board.png");
+    obj.gameStage.addChild(board);
 
     obj.bindObjParent = function () {
         obj.playerLogic.parent = obj;
@@ -252,13 +304,9 @@ var GameView = function (gamelogic, playerlogic) {
     }
 
     obj.gameStage.update = function () {
-        for (var i = 0; i < obj.playerLogic.player.length; i++) {
-            if (!!obj.playerLogic.player[i]) {
-                for (var j = 0; j < obj.playerLogic.player[i].plane.length; j++) {
-                    if (!!obj.playerLogic.player[i].plane[j].sprite.animate) {
-                        obj.playerLogic.player[i].plane[j].sprite.animate.update();
-                    }
-                }
+        for (var i = 0; i < obj.containsAnimate.length; i++) {
+            if (!!obj.containsAnimate[i].animate) {
+                obj.containsAnimate[i].animate.update();
             }
         }
     };
