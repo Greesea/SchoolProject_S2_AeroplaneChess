@@ -152,10 +152,10 @@ function GameInitializeGameStage() {
     end.push(new GameRouteEnd([new PIXI.Point(450, 476.5), new PIXI.Point(450, 447), new PIXI.Point(450, 417.5), new PIXI.Point(450, 388.5), new PIXI.Point(450, 359), new PIXI.Point(450, 326.5)], Region.player4, Direction.up));
 
     var hangar = [];
-    hangar.push(new GameHangar([new PIXI.Point(204.3, 186.6), new PIXI.Point(214.5, 115.81), new PIXI.Point(265.19, 115.81), new PIXI.Point(265.19, 64.5), new PIXI.Point(214.5, 64.5)], 42/*TODO*/, Region.player1, Direction.down, Direction.right));
-    hangar.push(new GameHangar([new PIXI.Point(566.1, 55.8), new PIXI.Point(634.5, 64.5), new PIXI.Point(634.5, 115.81), new PIXI.Point(685.19, 115.81), new PIXI.Point(685.19, 64.5)], 3/*TODO*/, Region.player2, Direction.left, Direction.down));
-    hangar.push(new GameHangar([new PIXI.Point(696.6, 413.1), new PIXI.Point(685.19, 484.5), new PIXI.Point(634.5, 484.5), new PIXI.Point(634.5, 535.81), new PIXI.Point(685.19, 535.81)], 16/*TODO*/, Region.player3, Direction.up, Direction.left));
-    hangar.push(new GameHangar([new PIXI.Point(337.92, 549.13), new PIXI.Point(265.19, 535.81), new PIXI.Point(265.19, 484.5), new PIXI.Point(214.5, 484.5), new PIXI.Point(214.5, 535.81)], 29/*TODO*/, Region.player4, Direction.right, Direction.up));
+    hangar.push(new GameHangar([new PIXI.Point(204.3, 186.6), new PIXI.Point(214.5, 115.81), new PIXI.Point(265.19, 115.81), new PIXI.Point(265.19, 64.5), new PIXI.Point(214.5, 64.5)], 42, Region.player1, Direction.down, Direction.right));
+    hangar.push(new GameHangar([new PIXI.Point(566.1, 55.8), new PIXI.Point(634.5, 64.5), new PIXI.Point(634.5, 115.81), new PIXI.Point(685.19, 115.81), new PIXI.Point(685.19, 64.5)], 3, Region.player2, Direction.left, Direction.down));
+    hangar.push(new GameHangar([new PIXI.Point(696.6, 413.1), new PIXI.Point(685.19, 484.5), new PIXI.Point(634.5, 484.5), new PIXI.Point(634.5, 535.81), new PIXI.Point(685.19, 535.81)], 16, Region.player3, Direction.up, Direction.left));
+    hangar.push(new GameHangar([new PIXI.Point(337.92, 549.13), new PIXI.Point(265.19, 535.81), new PIXI.Point(265.19, 484.5), new PIXI.Point(214.5, 484.5), new PIXI.Point(214.5, 535.81)], 29, Region.player4, Direction.right, Direction.up));
 
     var gamelogic = new GameLogic(route, end, hangar);
 

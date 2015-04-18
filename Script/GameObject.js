@@ -423,6 +423,7 @@ var PlayerLogic = function () {
                 }
                 if (++times == moveCount) {
                     if (nodes[nodes.length - 1].index == 5) {
+                        //TODO 抵达终点后
                         plane.complete = true;
                         plane.sprite.interactive = false;
                         plane.sprite.buttonMode = false;
