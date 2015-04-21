@@ -14,7 +14,8 @@ $(function () {
     //加载共通资源文件
     Utils.DiceAnimate = [PIXI.Texture.fromImage("../Resources/InGame/dice-1.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-2.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-3.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-4.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-5.png"), PIXI.Texture.fromImage("../Resources/InGame/dice-6.png")];
     Utils.PlaneIcons = [PIXI.Texture.fromImage("../Resources/InGame/plane-p1.png"), PIXI.Texture.fromImage("../Resources/InGame/plane-p2.png"), PIXI.Texture.fromImage("../Resources/InGame/plane-p3.png"), PIXI.Texture.fromImage("../Resources/InGame/plane-p4.png")];
-    Utils.PanelPlayerBG = [PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p1.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p2.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p1.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p2.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-cover.png")];
+    Utils.PanelPlayerBG = [PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p1.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p2.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p3.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p4.png")];
+    Utils.PanelPlayerBG_cover = [PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p1-cover.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p2-cover.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p3-cover.png"), PIXI.Texture.fromImage("../Resources/InGame/leftPanel-p4-cover.png")];
 
     //加载菜单
     GameInitializeMainMenu();
@@ -138,7 +139,7 @@ function GameInitializeGameStage() {
     route.push(new GameRouteNode(Region.player1, null, false, new GameRouteJump(47, false, null, null), new PIXI.Point(270.5, 196.5)));
     route.push(new GameRouteNode(Region.player2, null, false, new GameRouteJump(48, false, null, null), new PIXI.Point(300.5, 196.5)));
     route.push(new GameRouteNode(Region.player3, Direction.up, false, new GameRouteJump(49, false, null, null), new PIXI.Point(334.5, 207.5)));
-    route.push(new GameRouteNode(Region.player4, null, false, new GameRouteJump(6, true, Region.player1, Direction.right), new PIXI.Point(357, 184.5)));
+    route.push(new GameRouteNode(Region.player4, null, false, new GameRouteJump(6, true, Region.player2, Direction.right), new PIXI.Point(357, 184.5)));
     route.push(new GameRouteNode(Region.player1, null, false, new GameRouteJump(51, false, null, null), new PIXI.Point(345.5, 151.5)));
     route.push(new GameRouteNode(Region.player2, null, false, new GameRouteJump(0, false, null, null), new PIXI.Point(345.5, 121.5)));
     route.push(new GameRouteNode(Region.player3, Direction.right, false, new GameRouteJump(1, false, null, null), new PIXI.Point(356.5, 88)));
@@ -147,7 +148,7 @@ function GameInitializeGameStage() {
 
     var end = [];
     end.push(new GameRouteEnd([new PIXI.Point(275, 300.5), new PIXI.Point(304, 300.5), new PIXI.Point(333, 300.5), new PIXI.Point(362, 300.5), new PIXI.Point(391, 300.5), new PIXI.Point(422, 300.5)], Region.player1, Direction.right));
-    end.push(new GameRouteEnd([new PIXI.Point(450, 124), new PIXI.Point(450, 153.5), new PIXI.Point(450, 183), new PIXI.Point(450, 212.5), new PIXI.Point(450, 214.5), new PIXI.Point(449.5, 273.5)], Region.player2, Direction.down));
+    end.push(new GameRouteEnd([new PIXI.Point(450, 124), new PIXI.Point(450, 153.5), new PIXI.Point(450, 183), new PIXI.Point(450, 212.5), new PIXI.Point(450, 241.5), new PIXI.Point(449.5, 273.5)], Region.player2, Direction.down));
     end.push(new GameRouteEnd([new PIXI.Point(624, 300.5), new PIXI.Point(594.5, 300.5), new PIXI.Point(566, 300.5), new PIXI.Point(537, 300.5), new PIXI.Point(507.5, 300.5), new PIXI.Point(477, 300)], Region.player3, Direction.left));
     end.push(new GameRouteEnd([new PIXI.Point(450, 476.5), new PIXI.Point(450, 447), new PIXI.Point(450, 417.5), new PIXI.Point(450, 388.5), new PIXI.Point(450, 359), new PIXI.Point(450, 326.5)], Region.player4, Direction.up));
 

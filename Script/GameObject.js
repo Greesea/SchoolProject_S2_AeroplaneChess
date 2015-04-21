@@ -1,6 +1,31 @@
 /**
  * Created by Drake on 2015/4/6.
  */
+Array.prototype.indexOf = function (val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == val)
+            return i;
+    }
+    return -1;
+};
+
+Array.prototype.remove = function (val) {
+    var index = this.indexOf(val);
+    if (index > -1) {
+        this.splice(index, 1);
+    }
+};
+
+Array.prototype.getElementByType = function (type) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i].type && this[i].type == type) {
+            return this[i];
+        }
+    }
+
+    return null;
+};
+
 var Stages = function () {
     var obj = {};
 
@@ -14,6 +39,18 @@ var Stages = function () {
         }
 
         return null;
+    };
+
+    obj.remove = function (name) {
+        var index = -1;
+        for (var i = 0; i < obj.list.length; i++) {
+            if (obj.list[i].name == name) {
+                index = i;
+                break;
+            }
+        }
+
+        obj.list.splice(index, 1);
     };
 
     return obj;
@@ -36,16 +73,24 @@ var Utils = {
      * @return {number}
      */
     GenerateRandomNum: function (min, max) {
-        var r = Math.random();
-        while (true) {
-            if (r > 0.4 && r < 0.6) {
-                r = Math.random();
-            } else {
-                break;
+        var rList = [];
+
+        for (var i = 0; i < 9; i++) {
+            var r = Math.random();
+            while (true) {
+                if (r > 0.4 && r < 0.6) {
+                    r = Math.random();
+                } else {
+                    break;
+                }
             }
+
+            rList.push(Math.floor(r * (max + 1 - min) + min));
         }
 
-        return Math.floor(r * (max + 1 - min) + min);
+        return rList[(Math.floor(Math.random() * 9))];
+
+        //return Math.floor(r * (max + 1 - min) + min);
     },
 
     DiceAnimate: [],
@@ -79,14 +124,92 @@ var Utils = {
         return (Math.abs(pointA.x - pointB.x) <= (deviation * speed) && Math.abs(pointA.y - pointB.y) <= (deviation * speed))
     },
 
-    //TODO 碰撞判定与动作
-    DamageHit: function (logic, sender, where, index) {
-        //console.log("hit");
+    DamageHit: function (view, region, whereAmI, index) {
+        var onDamage = [];
+
+        //查找被碰撞的飞机
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                var nowPlane = view.playerLogic.player[i].plane[j];
+
+                if (nowPlane) {
+                    if (nowPlane.region != region && nowPlane.whereAmI == whereAmI && nowPlane.nowRouteIndex == index) {
+                        onDamage.push(nowPlane);
+                    }
+                }
+            }
+        }
+
+        //如果列表大于0
+        if (onDamage.length > 0) {
+            for (var i = 0; i < onDamage.length; i++) {
+                var hangarSlot = Utils.GetFirstNullHangarSlot(view.gameLogic, onDamage[i].region);
+                if (hangarSlot) {
+                    hangarSlot.original.empty = false;
+                    onDamage[i].sprite.animate = nodeMoveAnimate(onDamage[i].sprite, [hangarSlot], 6, Utils.NullFunc);
+                }
+            }
+        }
+    },
+
+    GetFirstNullHangarSlot: function (logic, region) {
+        var re = null;
+
+        //查找对应的机库
+        for (var i = 0; i < 4; i++) {
+            if (logic.hangar[i].region == region) {
+                for (var j = 1; j < 5; j++) {
+                    if (logic.hangar[i].slotLocationArray[j].empty) {
+                        re = {};
+                        re.original = logic.hangar[i].slotLocationArray[j];
+                        re.position = logic.hangar[i].slotLocationArray[j].clone();
+                        re.whereAmI = "hangar";
+                        re.direction = logic.hangar[i].direction;
+                        re.region = region;
+                        re.index = j;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return re;
+    },
+
+    EndFunc: function (e) {
+        var plane = e.sender.bindPlane;
+        plane.parent.parent.stage.removeChild(e.sender);
+        plane.parent.plane.remove(plane);
+        plane.parent.completeCount++;
+        plane.parent.parent.updateLeftPanel();
+
+        if (plane.parent.completeCount == 4) {
+            plane.parent.parent.gameOver(plane.region);
+        }
+
+        e.sender.bindPlane.parent.parent.nextPlayer();
+    },
+
+    moveFunc: function (e, state) {
+        switch (state) {
+            case "{six}":
+                e.sender.bindPlane.parent.parent.displayDice();
+                break;
+            case "{six}{end}":
+                Utils.EndFunc(e);
+                e.sender.bindPlane.parent.parent.displayDice();
+                break;
+            case "{end}":
+                Utils.EndFunc(e);
+                break;
+            case "{next}":
+                e.sender.bindPlane.parent.parent.nextPlayer();
+                break;
+        }
     }
 };
 
 var Region = {
-    "tableCorner": -1,
     "player1": 0,
     "player2": 1,
     "player3": 2,
@@ -162,6 +285,7 @@ var GamePlane = function (nowRouteIndex, whereAmI, direction, region) {
     obj.whereAmI = whereAmI;
     obj.direction = direction;
     obj.region = region;
+    obj.parent = null;
 
     return obj;
 };
@@ -173,6 +297,7 @@ var GamePlayer = function (region, isAI) {
     obj.plane = [];
     obj.region = region;
     obj.isAI = isAI;
+    obj.completeCount = 0;
 
     return obj;
 };
@@ -185,12 +310,15 @@ var PlayerLogic = function () {
     obj.nowPlayer = -1;
     obj.logic = null;
     obj.stage = null;
+    obj.leftPanel = null;
+    obj.dice = null;
 
     obj.getNode = function (region, where, index) {
         //根据位置查找节点
         switch (where) {
             case "node":
                 var v = {};
+                v.original = obj.logic.route[index];
                 v.position = obj.logic.route[index].location.clone();
                 v.direction = obj.logic.route[index].direction;
                 v.goForward = (!obj.logic.route[index].goForward) ? null : new GameRouteJump(obj.logic.route[index].goForward.goTo, obj.logic.route[index].goForward.isJump, obj.logic.route[index].goForward.jumpHitRegion, obj.logic.route[index].goForward.jumpDirection);
@@ -204,6 +332,7 @@ var PlayerLogic = function () {
                 for (var i = 0; i < obj.logic.hangar.length; i++) {
                     if (obj.logic.hangar[i].region == region) {
                         v = {};
+                        v.original = obj.logic.hangar[i];
                         v.position = obj.logic.hangar[i].slotLocationArray[index].clone();
                         v.whereAmI = "hangar";
                         if (index == 0) {
@@ -222,6 +351,7 @@ var PlayerLogic = function () {
                 for (var i = 0; i < obj.logic.end.length; i++) {
                     if (obj.logic.end[i].region == region) {
                         v = {};
+                        v.original = obj.logic.end[i];
                         v.position = obj.logic.end[i].nodeLocationArray[index].clone();
                         v.whereAmI = "end";
                         v.direction = obj.logic.end[i].direction;
@@ -234,15 +364,23 @@ var PlayerLogic = function () {
         }
     };
 
-    //TODO 游戏逻辑开始
     obj.start = function () {
+        //初始化骰子
+        obj.dice = new PIXI.Sprite(Utils.DiceAnimate[0]);
+        obj.dice.anchor.set(0.5);
+        obj.dice.width = 45;
+        obj.dice.height = 48;
+        obj.dice.position.set(450, 300);
+        obj.parent.containsAnimate.push(obj.dice);
+        obj.dice.on("click", obj.diceClick);
+
         //获取左栏元素
-        var leftPanelContainers = [null, null, null, null];
+        obj.leftPanel = [null, null, null, null];
 
         for (var i = 0; i < obj.parent.leftPanel.children.length; i++) {
             if (!!obj.parent.leftPanel.children[i].type) {
                 if (obj.parent.leftPanel.children[i].type == "leftPanelContainer") {
-                    leftPanelContainers[obj.parent.leftPanel.children[i].region] = obj.parent.leftPanel.children[i];
+                    obj.leftPanel[obj.parent.leftPanel.children[i].region] = obj.parent.leftPanel.children[i];
                 }
             }
         }
@@ -250,58 +388,147 @@ var PlayerLogic = function () {
         //设置非AI玩家对应的左栏元素文本
         for (var i = 0; i < 4; i++) {
             if (!obj.player[i].isAI) {
-                leftPanelContainers[i].children[1].text = "玩家：人";
+                obj.leftPanel[i].children.getElementByType("leftPanelItemTitleText").text = "             人类";
             }
         }
 
-        obj.nowPlayer = Utils.GenerateRandomNum(1, 4);
-        obj.nowPlayer = 0;
-        gameLoop();
+        //开始逻辑
+        obj.nowPlayer = Utils.GenerateRandomNum(0, 3);
+        obj.leftPanel[obj.nowPlayer].children.getElementByType("leftPanelItemBG").swapStatus(true);
 
-
-        //console.log("run");
-
-        //var resultList = [0, 0, 0, 0];
-        //var spriteList = [];
-        //var posList = [new PIXI.Point(50, 50), new PIXI.Point(50, 100), new PIXI.Point(50, 150), new PIXI.Point(50, 200)];
-
-        //for (var i = 0; i < 4; i++) {
-        //    resultList[i] = Utils.GenerateRandomNum(1, 6);
-
-        //    var sprite = new PIXI.Sprite(Utils.DiceAnimate[0]);
-        //    sprite.anchor.set(0.5);
-        //    sprite.width = 45;
-        //    sprite.height = 48;
-        //    sprite.position.set(posList[i].x, posList[i].y);
-        //    sprite.animate = switchAnimate(sprite, Utils.DiceAnimate, 25, true, Utils.NullFunc);
-        //    sprite.diceValue = resultList[i];
-
-        //    sprite.interactive = true;
-        //    sprite.on("click", function () {
-        //        console.log(this);
-        //        this.animate = undefined;
-        //        this.texture = Utils.DiceAnimate[this.diceValue];
-        //    });
-
-        //    obj.parent.containsAnimate.push(sprite);
-        //    obj.stage.addChild(sprite);
-
-        //    spriteList.push(sprite);
-        //}
+        obj.displayDice();
     };
 
-    function gameLoop() {
-        for (var i = 0; i < obj.player[obj.nowPlayer].plane.length; i++) {
-            obj.player[obj.nowPlayer].plane[i].sprite.interactive = true;
-            obj.player[obj.nowPlayer].plane[i].sprite.buttonMode = true;
-            if (!obj.player[obj.nowPlayer].isAI) {
-                obj.player[obj.nowPlayer].plane[i].sprite.interactive = true;
-                obj.player[obj.nowPlayer].plane[i].sprite.buttonMode = true;
-            } else {
+    obj.gameOver = function (e) {
+        obj.nextPlayer = Utils.NullFunc;
+        obj.displayDice = Utils.NullFunc;
+        obj.diceClick = Utils.NullFunc;
+        obj.planeCanClick = Utils.NullFunc;
 
+        var container = new PIXI.Container();
+
+        var msgBG = PIXI.Sprite.fromImage("../Resources/InGame/message-bg.png");
+        msgBG.position.set(250, 250);
+        container.addChild(msgBG);
+
+        var text = new PIXI.Text("游戏结束 玩家" + (e + 1) + "胜利");
+        text.position.set(330, 260);
+        container.addChild(text);
+
+        var btn = new PIXI.Sprite(PIXI.Texture.fromImage("../Resources/InGame/backBtn-bg.png"));
+        btn.position.set(390, 300);
+        btn.interactive = true;
+        btn.buttonMode = true;
+        btn.on("click", function () {
+            stages.remove("game");
+            nowStage = stages.getStageByName("mainmenu");
+            GameInitializeGameStage();
+        });
+        container.addChild(btn);
+
+        obj.stage.addChild(container);
+    };
+
+    obj.nextPlayer = function () {
+        if (++obj.nowPlayer >= 4) {
+            obj.nowPlayer = 0;
+        }
+
+        for (var i = 0; i < 4; i++) {
+            if (i == obj.nowPlayer) {
+                obj.leftPanel[i].children.getElementByType("leftPanelItemBG").swapStatus(true);
+            } else {
+                obj.leftPanel[i].children.getElementByType("leftPanelItemBG").swapStatus(false);
             }
         }
-    }
+
+        obj.displayDice();
+    };
+
+    obj.displayDice = function () {
+        obj.dice.animate = switchAnimate(obj.dice, Utils.DiceAnimate, 25, true, Utils.NullFunc);
+        obj.stage.addChild(obj.dice);
+
+        if (obj.player[obj.nowPlayer].isAI) {
+            obj.dice.interactive = false;
+            obj.dice.buttonMode = false;
+            setTimeout(function () {
+                obj.diceClick();
+            }, 2000);
+        } else {
+            obj.dice.interactive = true;
+            obj.dice.buttonMode = true;
+        }
+
+    };
+
+    obj.diceClick = function () {
+        //清除动画并设置骰子的数字
+        obj.dice.animate = undefined;
+        obj.dice.interactive = false;
+        obj.dice.buttonMode = false;
+        obj.dice.random = Utils.GenerateRandomNum(1, 6);
+        obj.dice.texture = Utils.DiceAnimate[obj.dice.random - 1];
+
+        //取消所有飞机可点击
+        for (var i = 0; i < 4; i++) {
+            obj.planeCanClick(obj.player[i].plane, false);
+        }
+
+        //检索是否有非6点可以移动的飞机
+        var outsidePlane = [];
+        for (var i = 0; i < 4; i++) {
+            if (obj.player[obj.nowPlayer].plane[i]) {
+                if (obj.dice.random != 6) {
+                    if (obj.player[obj.nowPlayer].plane[i].whereAmI == "hangar" && obj.player[obj.nowPlayer].plane[i].nowRouteIndex > 0) {
+                        continue;
+                    }
+                }
+                outsidePlane.push(obj.player[obj.nowPlayer].plane[i]);
+            }
+        }
+
+        //判断是否是AI
+        if (obj.player[obj.nowPlayer].isAI) {
+            setTimeout(function () {
+                if (outsidePlane.length > 0) {//非6可移动飞机数量>0
+                    obj.movePlane(outsidePlane[0], obj.dice.random);
+                } else if (obj.dice.random == 6) {//点数==6
+                    obj.movePlane(obj.player[obj.nowPlayer].plane[0], obj.dice.random);
+                } else {//换下一个
+                    obj.nextPlayer();
+                }
+            }, 2000);
+        } else {
+            if (outsidePlane.length > 0 || obj.dice.random == 6) {//如果非6可移动飞机数量>0或者点数==6
+                obj.planeCanClick(outsidePlane, true);
+            } else {
+                setTimeout(obj.nextPlayer, 2000);
+            }
+        }
+    };
+
+    obj.planeCanClick = function (objArray, bool) {
+        for (var i = 0; i < objArray.length; i++) {
+            if (objArray[i]) {
+                objArray[i].sprite.interactive = bool;
+                objArray[i].sprite.buttonMode = bool;
+            }
+        }
+    };
+
+    obj.playerSelectPlane = function (planeSprite) {
+        obj.planeCanClick(obj.player[obj.nowPlayer].plane, false);
+        obj.movePlane(planeSprite.bindPlane, obj.dice.random);
+    };
+
+    obj.updateLeftPanel = function () {
+        if (obj.leftPanel) {
+            for (var i = 0; i < 4; i++) {
+                obj.leftPanel[i].children.getElementByType("leftPanelItemCounterText").text = obj.player[i].completeCount;
+            }
+        }
+    };
 
     obj.createPlanes = function () {
         for (var i = 0; i < 4; i++) {//遍历玩家
@@ -315,8 +542,11 @@ var PlayerLogic = function () {
             }
 
             for (var j = 0; j < 4; j++) {//创建飞机
+                hangar.slotLocationArray[j + 1].empty = false;
+
                 var plane = new GamePlane(j + 1, "hangar", hangar.direction, obj.player[i].region);
                 plane.hangar = hangar;
+                plane.parent = obj.player[i];
 
                 var sprite = new PIXI.Sprite(Utils.PlaneIcons[i]);
                 sprite.anchor.set(0.5);
@@ -341,6 +571,9 @@ var PlayerLogic = function () {
     };
 
     obj.movePlane = function (plane, moveCount) {
+        obj.stage.removeChild(obj.dice);
+
+        var state = (moveCount == 6) ? "{six}" : "{next}";
         var nodes = [];
         if (plane.whereAmI == "hangar") {
             if (plane.nowRouteIndex == 0) {//当飞机正在机场出口时
@@ -358,9 +591,11 @@ var PlayerLogic = function () {
 
                 nodeJump(plane, nodes[nodes.length - 1], nodes);
 
-                plane.sprite.animate = nodeMoveAnimate(plane.sprite, nodes, 6, Utils.NullFunc);
-            } else if (moveCount <= 6) {
-                plane.sprite.animate = nodeMoveAnimate(plane.sprite, [obj.getNode(plane.region, "hangar", 0)], 6, Utils.NullFunc);
+                plane.sprite.animate = nodeMoveAnimate(plane.sprite, nodes, 6, state, Utils.moveFunc);
+            } else if (moveCount == 6) {
+                var original = obj.getNode(plane.region, "hangar", plane.nowRouteIndex).original;
+                original.slotLocationArray[plane.nowRouteIndex].empty = true;
+                plane.sprite.animate = nodeMoveAnimate(plane.sprite, [obj.getNode(plane.region, "hangar", 0)], 6, state, Utils.moveFunc);
             }
         } else if (plane.whereAmI == "node") {//当飞机在棋盘中
             var nowIndex = plane.nowRouteIndex;
@@ -390,6 +625,10 @@ var PlayerLogic = function () {
                         var n = obj.getNode(plane.region, "end", i);
                         nodes.push(n);
                     }
+
+                    if (nodes[nodes.length - 1].index == 5) {
+                        state += "{end}";
+                    }
                 }
 
                 if (!turnToEnd) {
@@ -400,13 +639,19 @@ var PlayerLogic = function () {
                     var n = obj.getNode(plane.region, "end", i);
                     nodes.push(n);
                 }
+
+                if (nodes[nodes.length - 1].index == 5) {
+                    state += "{end}";
+                }
             }
 
-            plane.sprite.animate = nodeMoveAnimate(plane.sprite, nodes, 6, Utils.NullFunc);
+            plane.sprite.animate = nodeMoveAnimate(plane.sprite, nodes, 6, state, Utils.moveFunc);
         } else if (plane.whereAmI == "end") {
             var times = 0;
             var nowIndex = plane.nowRouteIndex + 1;
             var reverse = false;
+            var end = false;
+
             while (true) {
                 if (nowIndex > 5) {
                     nowIndex -= 2;
@@ -423,30 +668,29 @@ var PlayerLogic = function () {
                 }
                 if (++times == moveCount) {
                     if (nodes[nodes.length - 1].index == 5) {
-                        //TODO 抵达终点后
-                        plane.complete = true;
-                        plane.sprite.interactive = false;
-                        plane.sprite.buttonMode = false;
+                        end = true;
                     }
                     break;
                 }
             }
 
-            plane.sprite.animate = nodeMoveAnimate(plane.sprite, nodes, 6, Utils.NullFunc);
+            if (end)
+                state = "{end}";
+            plane.sprite.animate = nodeMoveAnimate(plane.sprite, nodes, 6, state, Utils.moveFunc);
         }
 
         function nodeJump(plane, node, nodeArray) {
-            node.hit = obj.logic;
+            node.hit = obj.parent;
 
             if (node.region == plane.region && node.goForward) {
                 if (node.goForward.isJump) {
                     node.direction = node.goForward.jumpDirection;
                     var endHit = obj.getNode(node.goForward.jumpHitRegion, "end", 2);
                     endHit.direction = null;
-                    endHit.hit = obj.logic;
+                    endHit.hit = obj.parent;
                     nodeArray.push(endHit);
                     var jumpEnd = obj.getNode(null, "node", node.goForward.goTo);
-                    jumpEnd.hit = obj.logic;
+                    jumpEnd.hit = obj.parent;
                     nodeArray.push(jumpEnd);
                     nodeJump(plane, jumpEnd, nodeArray);
                 } else {
@@ -468,20 +712,17 @@ var PlayerLogic = function () {
                             var n = obj.getNode(null, "node", nowIndex);
                             nodes.push(n);
                         }
-                        nodes[nodes.length - 1].hit = obj.logic;
+                        nodes[nodes.length - 1].hit = obj.parent;
 
                         if (nodes[nodes.length - 1].endTo && nodes[nodes.length - 1].region == plane.region)
                             nodes[nodes.length - 1].direction = obj.getNode(plane.region, "end", 0).direction;
+
+                        if (nodes[nodes.length - 1].goForward && nodes[nodes.length - 1].goForward.isJump)
+                            nodeJump(plane, nodes[nodes.length - 1], nodes);
                     }
                 }
             }
         }
-    };
-
-    obj.playerSelectPlane = function (planeSprite) {
-        var random = Utils.GenerateRandomNum(1, 6);
-        console.log(random);
-        obj.movePlane(planeSprite.bindPlane, random);
     };
 
     obj.bindObjParent = function () {
@@ -530,16 +771,55 @@ var GameView = function (gamelogic, playerlogic) {
         container.region = i;
 
         //左栏元素背景
-        var sp = new PIXI.Sprite(Utils.PanelPlayerBG[i]);
+        var sp = new PIXI.Sprite(Utils.PanelPlayerBG_cover[i]);
         sp.type = "leftPanelItemBG";
-        sp.position.set(0, 100 * (i + 1));
+        sp.index = i;
+        sp.state = false;
+        sp.position.set(0, 100 * i);
+        sp.swapStatus = function () {
+            if (this.state) {
+                this.texture = Utils.PanelPlayerBG_cover[this.index];
+                this.state = false;
+            } else {
+                this.texture = Utils.PanelPlayerBG[this.index];
+                this.state = true;
+            }
+        };
+        sp.swapStatus = function (bool) {
+            if (bool) {
+                this.texture = Utils.PanelPlayerBG[this.index];
+            } else {
+                this.texture = Utils.PanelPlayerBG_cover[this.index];
+            }
+            this.state = bool;
+        };
         container.addChild(sp);
 
-        var text = new PIXI.Text("玩家：AI");
-        sp.type = "leftPanelItemText";
-        text.position.set(20, 30 + (i * 100));
+        var title = new PIXI.Text("玩家" + (i + 1) + "：");
+        title.style.font = "bold 14pt Arial";
+        title.anchor.set(0, 0);
+        title.position.set(5, 10 + (i * 100));
+        container.addChild(title);
 
+        var text = new PIXI.Text("电脑(简单的)");
+        text.type = "leftPanelItemTitleText";
+        text.style.font = "bold 14pt Arial";
+        text.anchor.set(0, 0);
+        text.position.set(5, 30 + (i * 100));
         container.addChild(text);
+
+        var counterTitle = new PIXI.Text("完成数：");
+        counterTitle.style.font = "bold 14pt Arial";
+        counterTitle.anchor.set(0, 0);
+        counterTitle.position.set(5, 60 + (i * 100));
+        container.addChild(counterTitle);
+
+        var counter = new PIXI.Text("0");
+        counter.type = "leftPanelItemCounterText";
+        counter.style.font = "bold 14pt Arial";
+        counter.anchor.set(0, 0);
+        counter.position.set(80, 60 + (i * 100));
+        container.addChild(counter);
 
         obj.leftPanel.addChild(container);
     }
@@ -547,11 +827,10 @@ var GameView = function (gamelogic, playerlogic) {
     obj.gameStage.addChild(obj.leftPanel);
     /*==================初始化左栏==================*/
 
-    //TODO 游戏开始
     obj.start = function () {
         var container = new PIXI.Container();
 
-        var selectBG = PIXI.Sprite.fromImage("../Resources/InGame/selectplayerslot.png");
+        var selectBG = PIXI.Sprite.fromImage("../Resources/InGame/message-bg.png");
         selectBG.position.set(250, 250);
         container.addChild(selectBG);
 
