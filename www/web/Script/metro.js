@@ -108,6 +108,7 @@ $(function () {
                 $(this).stop().animate({"background-color": metroContent.getValue("color:metro-comment-page-bg-over")}, 120);
         });
 
+    //提交按钮
     $(".metro-submit-text-btn")
         .hover(function () {
             $(this).stop().animate({"background-color": metroContent.getValue("color:metro-submit-text-btn-bg-over")}, 120);

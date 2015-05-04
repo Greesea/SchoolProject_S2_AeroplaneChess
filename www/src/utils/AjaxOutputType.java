@@ -6,6 +6,7 @@ package utils;
 public enum AjaxOutputType {
     ParameterNotFound,
     OverLength,
+    ParameterEmpty,
     SqlError,
     Success
 }

@@ -11,4 +11,14 @@ public class tools {
         }
         return null;
     }
+
+    public static String blockHtml(String content) {
+        String re = content;
+        re = re.replaceAll("&", "&amp;");
+        re = re.replaceAll("<", "&lt;");
+        re = re.replaceAll(">", "&gt;");
+        re = re.replaceAll(" ", "&nbsp;");
+        re = re.replaceAll("\n", "<br/>");
+        return re;
+    }
 }

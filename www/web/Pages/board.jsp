@@ -43,18 +43,18 @@
                     <tr class="metro-submit-text-attr-block">
                         <td class="metro-submit-text-attr-title">用户名(可选)：</td>
                         <td class="metro-submit-text-attr-input-block">
-                            <input class="metro-submit-text-attr-input" type="text"/>
+                            <input class="metro-submit-text-attr-input" type="text" id="poster"/>
                         </td>
                     </tr>
                     <tr class="metro-submit-text-attr-block">
                         <td class="metro-submit-text-attr-title">邮箱(可选)：</td>
                         <td class="metro-submit-text-attr-input-block">
-                            <input class="metro-submit-text-attr-input" type="text"/>
+                            <input class="metro-submit-text-attr-input" type="text" id="mail"/>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <textarea class="metro-submit-text-area"></textarea>
+                            <textarea class="metro-submit-text-area" id="content"></textarea>
                         </td>
                     </tr>
                     <tr>

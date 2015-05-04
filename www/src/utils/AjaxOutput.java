@@ -24,8 +24,11 @@ public class AjaxOutput {
             case OverLength:
                 obj.put("code", "0xe2");
                 break;
+            case ParameterEmpty:
+                obj.put("code", "0xe3");
+                break;
             case SqlError:
-                obj.put("code", "0x3");
+                obj.put("code", "0xe4");
                 break;
             case Success:
                 obj.put("code", "0xff");

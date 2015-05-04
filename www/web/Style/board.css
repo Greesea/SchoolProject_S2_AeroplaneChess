@@ -11,7 +11,10 @@
 }
 
 .metro-page-block {
-    padding-left: 602px;
+    margin-left: auto;
+    position: relative;
+    right: 177px;
+    width: 243px;
 }
 
 .metro-submit-text-block {

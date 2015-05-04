@@ -5,30 +5,26 @@ var board_nowPage = 1;
 
 $(function () {
     //获取第一页数据
-    board_fillPage(1);
     board_adjustPageControl();
 
     $(".metro-page-prev").click(function () {
         if (!$(this).is(".metro-page-disable")) {
             board_nowPage--;
-            board_fillPage(board_nowPage);
-            board_adjustPageControl();
+            board_syncPage($(this));
         }
     });
 
     $(".metro-page-next").click(function () {
         if (!$(this).is(".metro-page-disable")) {
             board_nowPage++;
-            board_fillPage(board_nowPage);
-            board_adjustPageControl();
+            board_syncPage($(this));
         }
     });
 
     $(".metro-page-number").click(function () {
         if (!$(this).is(".metro-page-disable")) {
-            board_nowPage = $(this).html();
-            board_fillPage(board_nowPage);
-            board_adjustPageControl();
+            board_nowPage = parseInt($(this).html());
+            board_syncPage($(this));
         }
     });
 
@@ -38,18 +34,22 @@ $(function () {
             type: "post",
             cache: "false",
             dataType: "json",
-            data: "a=test",
+            data: "request=new&poster=" + $("#poster").val().trim() + "&mail=" + $("#mail").val().trim() + "&content=" + $("#content").val().trim(),
             success: function (data) {
                 if (data == null) {
                     alert("未知错误");
                 } else if (data.code == "0xe1") {
-                    alert("无参数");
+                    alert("提交失败：参数不正确");
                 } else if (data.code == "0xe2") {
-                    alert("过长");
+                    alert("提交失败：用户名或邮箱或内容过长");
                 } else if (data.code == "0xe3") {
-                    alert("数据库异常");
+                    alert("提交失败：内容不能为空")
+                } else if (data.code == "0xe4") {
+                    alert("提交失败：数据库异常，请联系管理员");
                 } else if (data.code == "0xff") {
-                    alert(data.msg);
+                    board_nowPage = 1;
+                    board_adjustPageControl();
+                    board_fillPage(1);
                 }
             },
             error: function () {
@@ -58,6 +58,11 @@ $(function () {
         });
     });
 });
+
+function board_syncPage(sender) {
+    board_adjustPageControl();
+    sender.stop().removeAttr("style");
+}
 
 function board_adjustPageControl() {
     $.ajax({
@@ -70,11 +75,18 @@ function board_adjustPageControl() {
             if (data == null) {
                 alert("未知错误");
             } else if (data.code == "0xe1") {
-                alert("无参数");
+                alert("请求失败：参数不正确");
             } else if (data.code == "0xff") {
+                $(".metro-page-prev,.metro-page-next,.metro-page-number").removeAttr("style").removeClass("metro-page-disable");
+                if (data.msg < 3) {
+                    $(".metro-page-number").each(function (i, e) {
+                        if (i >= data.msg) {
+                            $(e).addClass("metro-page-disable");
+                        }
+                    });
+                    $(".metro-page-next").addClass("metro-page-disable");
+                }
                 if (board_nowPage < 3) {
-                    $(".metro-page-block").children().removeClass("metro-page-disable");
-
                     $("#page1").html(1);
                     $("#page2").html(2);
                     $("#page3").html(3);
@@ -87,10 +99,9 @@ function board_adjustPageControl() {
                     if (board_nowPage == 1) {
                         $(".metro-page-prev").addClass("metro-page-disable");
                     }
-                } else if (board_nowPage > data.msg - 2) {
-                    $(".metro-page-block").children().removeClass("metro-page-disable");
-                    $("#page1").html(data.msg - 2);
-                    $("#page2").html(data.msg - 1);
+                } else if (board_nowPage > parseInt(data.msg) - 2) {
+                    $("#page1").html(parseInt(data.msg) - 2);
+                    $("#page2").html(parseInt(data.msg) - 1);
                     $("#page3").html(data.msg);
                     $(".metro-page-number").each(function () {
                         if ($(this).html() == board_nowPage) {
@@ -98,15 +109,15 @@ function board_adjustPageControl() {
                         }
                     });
 
-                    if (board_nowPage == data.msg) {
+                    if (board_nowPage == parseInt(data.msg)) {
                         $(".metro-page-next").addClass("metro-page-disable");
                     }
                 } else {
-                    $(".metro-page-block").children().removeClass("metro-page-disable");
                     $("#page1").html(board_nowPage - 1);
                     $("#page2").html(board_nowPage).addClass("metro-page-disable");
                     $("#page3").html(board_nowPage + 1);
                 }
+                board_fillPage(board_nowPage);
             }
         },
         error: function () {
@@ -127,7 +138,7 @@ function board_fillPage(page) {
             if (data == null) {
                 alert("未知错误");
             } else if (data.code == "0xe1") {
-                alert("无参数");
+                alert("请求失败：参数不正确");
             } else if (data.code == "0xff") {
                 $("#comments").html(data.msg);
             }

@@ -21,20 +21,18 @@ GO
 -----------------------使用数据库-----------------------
 USE [aeroplaneWebsite]
 GO
-
 -----------------------创建数据表-----------------------
 CREATE TABLE comment (
   id      INT IDENTITY PRIMARY KEY,
-  poster  VARCHAR(12)  NOT NULL,
-  mail    VARCHAR(20)  NOT NULL,
-  content NVARCHAR(200) NOT NULL,
-  date    DATETIME     NOT NULL
+  poster  VARCHAR(12),
+  mail    VARCHAR(20),
+  content NVARCHAR(400) NOT NULL,
+  date    DATETIME      NOT NULL
 )
 GO
 -----------------------创建约束-----------------------
 ALTER TABLE comment ADD
-CONSTRAINT DF_comment_poster DEFAULT 'anonymous' FOR [poster],
-CONSTRAINT DF_comment_mail DEFAULT '' FOR [mail],
-CONSTRAINT DF_comment_content DEFAULT '' FOR [content],
 CONSTRAINT DF_comment_date DEFAULT getdate() FOR [date]
 GO
+-----------------------增加数据-----------------------
+INSERT comment (poster, mail, content) VALUES ('Admin', default, '这里是留言板</br>您可以在这里给开发者留言也可以与其它玩家交流')

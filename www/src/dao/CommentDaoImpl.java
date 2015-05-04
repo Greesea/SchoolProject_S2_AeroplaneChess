@@ -14,17 +14,17 @@ public class CommentDaoImpl extends BaseDao implements CommentDao {
         super(Drivers.SQLServer);
     }
 
-    final int perPage = 1;
+    final double perPage = 10.0;
 
     @Override
     public Comment[] getComments_desc(int page) {
         ArrayList<Comment> list = new ArrayList<Comment>();
 
         try {
-            preparedStatement = connection.prepareStatement("SELECT TOP " + perPage + " id,poster,mail,content,date FROM comment WHERE id NOT IN (select top (" + perPage + "*" + (page - 1) + ") id from comment order by id desc) ORDER BY id DESC");
+            preparedStatement = connection.prepareStatement("SELECT TOP " + (int) perPage + " id,poster,mail,content,date FROM comment WHERE id NOT IN (select top (" + (int) perPage + "*" + (page - 1) + ") id from comment order by id desc) ORDER BY id DESC");
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                list.add(new Comment(resultSet.getInt("id"), resultSet.getString("poster"), resultSet.getString("mail"), resultSet.getString("content"), resultSet.getDate("date")));
+                list.add(new Comment(resultSet.getInt("id"), resultSet.getString("poster"), resultSet.getString("mail"), resultSet.getString("content"), resultSet.getTimestamp("date")));
             }
             return list.toArray(new Comment[list.size()]);
         } catch (SQLException e) {
@@ -35,23 +35,12 @@ public class CommentDaoImpl extends BaseDao implements CommentDao {
 
     @Override
     public boolean newComment(Comment comment) {
-        Comment c = new Comment();
         try {
-            preparedStatement = connection.prepareStatement("INSERT comment(poster,mail,content) VALUES ("
-                    + ((!comment.getPoster().equals(c.getPoster())) ? "?," : "default,")
-                    + ((!comment.getMail().equals(c.getMail())) ? "?," : "default,")
-                    + ((!comment.getContent().equals(c.getContent())) ? "?" : "default")
-                    + ")");
+            preparedStatement = connection.prepareStatement("INSERT comment(poster,mail,content) VALUES (?,?,?)");
 
-            if (!comment.getPoster().equals(c.getPoster())) {
-                preparedStatement.setString(1, comment.getPoster());
-            }
-            if (!comment.getMail().equals(c.getMail())) {
-                preparedStatement.setString(2, comment.getMail());
-            }
-            if (!comment.getContent().equals(c.getContent())) {
-                preparedStatement.setString(3, comment.getContent());
-            }
+            preparedStatement.setString(1, ((!comment.getPoster().isEmpty()) ? comment.getPoster() : ""));
+            preparedStatement.setString(2, ((!comment.getMail().isEmpty()) ? comment.getMail() : ""));
+            preparedStatement.setString(3, comment.getContent());
 
             if (preparedStatement.executeUpdate() > 0) {
                 return true;
@@ -68,7 +57,7 @@ public class CommentDaoImpl extends BaseDao implements CommentDao {
             preparedStatement = connection.prepareStatement("SELECT count(0) 'count' FROM comment");
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            return resultSet.getInt("count") / perPage;
+            return (int) Math.ceil(resultSet.getInt("count") / perPage);
         } catch (SQLException e) {
             e.printStackTrace();
         }
