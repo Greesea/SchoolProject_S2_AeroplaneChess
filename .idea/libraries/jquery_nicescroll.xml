@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="jquery.nicescroll" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/www/web/Script/library/jquery.nicescroll.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/www/web/Script/library/jquery.nicescroll.js" />
+    </SOURCES>
+  </library>
+</component>

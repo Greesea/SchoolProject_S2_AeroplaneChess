@@ -1,0 +1,148 @@
+/*2015/4/22 5:52 - Drake*/
+/* 顶部栏 ▽ */
+
+.navContainer {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 65px;
+    background-color: #5d5d5c;
+    font-family: "Microsoft YaHei UI";
+    z-index: 99;
+}
+
+.navContainer .navList {
+    margin: 12px auto;
+    width: 940px;
+    height: 100%;
+}
+
+.navContainer .navList-item {
+    text-align: center;
+    margin-right: 5px;
+    list-style: none;
+}
+
+.navTitle {
+    position: relative;
+    top: -12px;
+    line-height: 65px;
+    color: white;
+    font-size: 22px;
+    float: left;
+    cursor: default;
+}
+
+.navTitle a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.navTitleDescription {
+    position: relative;
+    top: 20px;
+    font-size: 12px;
+    color: #bababa;
+    float: left;
+    cursor: default;
+}
+
+/* 顶部栏站点导航菜单 ▽ */
+.navMenu-head {
+    position: relative;
+    top: -12px;
+    height: 100%;
+    float: right;
+}
+
+.navMenu-head .navMenu-title {
+    width: 120px;
+    height: 100%;
+    line-height: 65px;
+    text-align: center;
+    float: right;
+    cursor: default;
+}
+
+.navMenu-head ul {
+    list-style: none;
+    text-align: left;
+}
+
+.navMenu-content {
+    background-color: #767676;
+    clear: both;
+    /*width: 340px;*/
+    /*height: 160px;*/
+    width: 0;
+    height: 0;
+    padding-top: 4px;
+    padding-bottom: 10px;
+    overflow: hidden;
+    color: white;
+}
+
+.navMenu-content div {
+    position: relative;
+    top: -160px;
+    left: 160px;
+    margin: 0;
+    border-left: 1px solid #a2a2a2;
+    width: 160px;
+    height: 150px;
+    padding: 0;
+}
+
+.navMenu-list {
+    width: 160px;
+    height: 160px;
+    padding: 0;
+    display: block;
+}
+
+.navMenu-list .navMenu-item {
+    margin-top: 10px;
+    margin-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 12px;
+    border-bottom: 1px solid #a2a2a2;
+    font-size: 18px;
+}
+
+.navMenu-hint {
+    margin: 0;
+    width: 160px;
+    height: 150px;
+    overflow: hidden;
+    word-break: break-all;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: default;
+}
+
+.navMenu-item a {
+    color: white;
+    text-decoration: none;
+}
+
+.navMenu-item span {
+    display: none;
+}
+
+/* 1px 外发光 */
+.navMenu-item a:hover {
+    text-shadow: 1px 0 1px #bababa, 0 1px 1px #bababa, 0 -1px 1px #bababa, -1px 0 1px #bababa;
+}
+
+/* 顶部栏站点导航菜单 △ */
+
+/* 顶部栏 △ */
+
+.navMenu-pos_repair {
+    position: relative;
+    top: 65px;
+}
+
+body {
+    margin: 0;
+}

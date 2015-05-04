@@ -1,0 +1,11 @@
+/*2015/4/22 11:41 - Drake*/
+#inner{
+    text-align: center;
+    background-color: #696968;
+}
+
+#innerItem {
+    width: 980px;
+    height: 600px;
+    margin: 0 auto;
+}

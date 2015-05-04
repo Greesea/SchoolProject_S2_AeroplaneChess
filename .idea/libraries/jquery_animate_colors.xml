@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="jquery.animate-colors" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/Script/library/jquery.animate-colors.js" />
+        <item url="file://$PROJECT_DIR$/www/web/Script/library/jquery.animate-colors.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/www/web/Script/library/jquery.animate-colors.js" />
+    </SOURCES>
+  </library>
+</component>

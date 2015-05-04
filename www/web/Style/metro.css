@@ -1,0 +1,140 @@
+/*2015/5/3 10:40 - Drake*/
+@font-face {
+    font-family: "Microsoft YaHei UI";
+    font-style: normal;
+    font-weight: normal;
+    src: local("微软雅黑"), local("Microsoft YaHei UI"), url("../Font/msyh.ttc");
+}
+
+.metro-container {
+    font-family: "Microsoft YaHei UI";
+}
+
+.metro-navigate-dropdown-menu {
+    background-color: #767676;
+    color: white;
+}
+
+.metro-content-title {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-size: 32px;
+    color: #ffffff;
+    font-weight: bold;
+    cursor: default;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+.metro-content-subtitle {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    font-size: 18px;
+    color: #e9e9e7;
+    cursor: default;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+.metro-content-link {
+    font-size: 18px;
+    color: #79bbeb;
+}
+
+.metro-content-link-block {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    text-align: center;
+    display: block;
+}
+
+.metro-content-link-block a {
+    font-size: 18px;
+    color: #79bbeb;
+}
+
+.metro-content-button {
+    font-size: 20px;
+    color: #ffffff;
+    background-color: #79bbeb;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.metro-comment-block {
+    margin-left: 80px;
+    margin-bottom: 4px;
+    width: 640px;
+    color: #ffffff;
+    cursor: default;
+}
+
+.metro-comment-info {
+    padding-left: 20px;
+    background-color: #6c818f;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.metro-comment-content {
+    padding-left: 40px;
+    font-size: 18px;
+    cursor: text;
+    line-height: 30px;
+}
+
+.metro-page-prev, .metro-page-next, .metro-page-number {
+    float: left;
+    padding-left: 14px;
+    padding-right: 14px;
+    margin-right: 4px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #ffffff;
+    background-color: #689977;
+    cursor: pointer;
+}
+
+.metro-page-disable {
+    background-color: #4c5d51;
+    color: #959595;
+    cursor: default;
+}
+
+.metro-page-clear {
+    clear: both;
+}
+
+.metro-submit-text-block table {
+    width: 100%;
+}
+
+.metro-submit-text-attr-title {
+    color: #ffffff;
+    /*font-weight: bold;*/
+    text-align: right;
+    line-height: 18px;
+}
+
+.metro-submit-text-attr-input-block {
+    padding-left: 12px;
+}
+
+.metro-submit-text-area {
+    width: 100%;
+    resize: none;
+}
+
+.metro-submit-text-btn {
+    display: inline;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #ffffff;
+    background-color: #689977;
+    font-size: 18px;
+    cursor: pointer;
+}
